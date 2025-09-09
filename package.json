@@ -1,0 +1,24 @@
+{
+  "name": "@localkart/monorepo",
+  "version": "1.0.0",
+  "description": "LocalAI is a platform that connects local service providers (plumbers, electricians, cleaners, etc.) with customers across India. The platform uses AI to:",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/surajSFDC/local-kart.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/surajSFDC/local-kart/issues"
+  },
+  "homepage": "https://github.com/surajSFDC/local-kart#readme",
+  "private": "true",
+  "engines": {
+    "node": ">=20"
+  }
+}
