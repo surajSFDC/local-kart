@@ -1,28 +1,60 @@
 version: '3.8'
 
 services:
+  # Core API Service
   api:
-    build: ../services/core-api
+    build: 
+      context: ../services/core-api
+      dockerfile: Dockerfile
     ports:
       - "3000:3000"
     environment:
       - NODE_ENV=production
+      - MONGODB_URI=mongodb://mongo:27017/localkart
+      - REDIS_URL=redis://redis:6379
+      - JWT_SECRET=your-super-secret-jwt-key-change-in-production
+      - CLIENT_URL=http://localhost:3001
     depends_on:
       - mongo
       - redis
+    volumes:
+      - ./logs:/app/logs
+    restart: unless-stopped
 
+  # React Web App
+  web:
+    build:
+      context: ../apps/web-app
+      dockerfile: Dockerfile
+    ports:
+      - "3001:80"
+    environment:
+      - REACT_APP_API_URL=http://localhost:3000/api
+    depends_on:
+      - api
+    restart: unless-stopped
+
+  # MongoDB Database
   mongo:
     image: mongo:7
     ports:
       - "27017:27017"
     volumes:
       - mongo_data:/data/db
+    environment:
+      - MONGO_INITDB_DATABASE=localkart
+    restart: unless-stopped
 
+  # Redis Cache
   redis:
     image: redis:7-alpine
     ports:
       - "6379:6379"
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
 
 volumes:
   mongo_data:
+  redis_data:
 
