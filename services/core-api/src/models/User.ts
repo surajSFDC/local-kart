@@ -1,12 +1,30 @@
 import mongoose, { Schema, Document } from 'mongoose';
 import bcrypt from 'bcryptjs';
-import { User as IUser, UserRole, GeoLocation } from '@localkart/shared-types';
 
-export interface IUserDocument extends IUser, Document {
+export interface IUserDocument extends Document {
+  email: string;
+  password: string;
+  role: 'customer' | 'provider' | 'admin';
+  profile: {
+    firstName: string;
+    lastName: string;
+    phone: string;
+    avatar?: string;
+    language: string;
+    location: {
+      address: string;
+      coordinates: [number, number];
+      city: string;
+      state: string;
+      pincode: string;
+    };
+  };
+  isVerified: boolean;
+  isActive: boolean;
   comparePassword(candidatePassword: string): Promise<boolean>;
 }
 
-const GeoLocationSchema = new Schema<GeoLocation>({
+const GeoLocationSchema = new Schema({
   address: { type: String, required: true },
   coordinates: { 
     type: [Number], 
@@ -41,7 +59,7 @@ const UserSchema = new Schema<IUserDocument>({
   },
   role: { 
     type: String, 
-    enum: ['customer', 'provider', 'admin'] as UserRole[], 
+    enum: ['customer', 'provider', 'admin'], 
     default: 'customer' 
   },
   profile: {

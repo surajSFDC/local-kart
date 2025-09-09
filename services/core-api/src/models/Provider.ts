@@ -1,16 +1,58 @@
 import mongoose, { Schema, Document } from 'mongoose';
-import { Provider as IProvider, ProviderServiceItem, ProviderServiceArea, ProviderAvailability, ProviderRating, ProviderPortfolioItem, ProviderDocumentItem, AIGeneratedProfile } from '@localkart/shared-types';
 
-export interface IProviderDocument extends IProvider, Document {}
+export interface IProviderDocument extends Document {
+  userId: mongoose.Types.ObjectId;
+  businessName: string;
+  description: string;
+  aiGeneratedProfile: {
+    summary: string;
+    skills: string[];
+    experience: string;
+    specialties: string[];
+  };
+  services: Array<{
+    category: string;
+    subcategory: string;
+    basePrice: number;
+    unit: 'hour' | 'service' | 'square_feet';
+  }>;
+  serviceAreas: Array<{
+    city: string;
+    pincodes: string[];
+    radius: number;
+  }>;
+  availability: {
+    days: string[];
+    timeSlots: Array<{
+      start: string;
+      end: string;
+    }>;
+  };
+  rating: {
+    average: number;
+    count: number;
+  };
+  portfolio: Array<{
+    images: string[];
+    descriptions: string[];
+  }>;
+  documents: Array<{
+    type: 'license' | 'certificate' | 'insurance';
+    url: string;
+    verified: boolean;
+  }>;
+  isVerified: boolean;
+  isActive: boolean;
+}
 
-const ProviderServiceItemSchema = new Schema<ProviderServiceItem>({
+const ProviderServiceItemSchema = new Schema({
   category: { type: String, required: true },
   subcategory: { type: String, required: true },
   basePrice: { type: Number, required: true, min: 0 },
   unit: { type: String, enum: ['hour', 'service', 'square_feet'], required: true }
 }, { _id: false });
 
-const ProviderServiceAreaSchema = new Schema<ProviderServiceArea>({
+const ProviderServiceAreaSchema = new Schema({
   city: { type: String, required: true },
   pincodes: [{ type: String, required: true }],
   radius: { type: Number, required: true, min: 1, max: 50 }
@@ -21,7 +63,7 @@ const ProviderAvailabilitySlotSchema = new Schema({
   end: { type: String, required: true, match: /^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/ }
 }, { _id: false });
 
-const ProviderAvailabilitySchema = new Schema<ProviderAvailability>({
+const ProviderAvailabilitySchema = new Schema({
   days: [{ 
     type: String, 
     enum: ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'],
@@ -30,23 +72,23 @@ const ProviderAvailabilitySchema = new Schema<ProviderAvailability>({
   timeSlots: [ProviderAvailabilitySlotSchema]
 }, { _id: false });
 
-const ProviderRatingSchema = new Schema<ProviderRating>({
+const ProviderRatingSchema = new Schema({
   average: { type: Number, default: 0, min: 0, max: 5 },
   count: { type: Number, default: 0, min: 0 }
 }, { _id: false });
 
-const ProviderPortfolioItemSchema = new Schema<ProviderPortfolioItem>({
+const ProviderPortfolioItemSchema = new Schema({
   images: [{ type: String, required: true }],
   descriptions: [{ type: String, required: true }]
 }, { _id: false });
 
-const ProviderDocumentItemSchema = new Schema<ProviderDocumentItem>({
+const ProviderDocumentItemSchema = new Schema({
   type: { type: String, enum: ['license', 'certificate', 'insurance'], required: true },
   url: { type: String, required: true },
   verified: { type: Boolean, default: false }
 }, { _id: false });
 
-const AIGeneratedProfileSchema = new Schema<AIGeneratedProfile>({
+const AIGeneratedProfileSchema = new Schema({
   summary: { type: String, required: true },
   skills: [{ type: String, required: true }],
   experience: { type: String, required: true },

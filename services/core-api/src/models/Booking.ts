@@ -1,16 +1,52 @@
 import mongoose, { Schema, Document } from 'mongoose';
-import { Booking as IBooking, BookingStatus, BookingService, BookingLocation, BookingSchedule, BookingPricing, BookingPayment, BookingReview } from '@localkart/shared-types';
 
-export interface IBookingDocument extends IBooking, Document {}
+export interface IBookingDocument extends Document {
+  customerId: mongoose.Types.ObjectId;
+  providerId: mongoose.Types.ObjectId;
+  service: {
+    category: string;
+    subcategory: string;
+    description: string;
+    estimatedDuration: number;
+  };
+  location: {
+    address: string;
+    coordinates: [number, number];
+    instructions?: string;
+  };
+  schedule: {
+    preferredDate: string;
+    preferredTime: string;
+    confirmedDate?: string;
+    confirmedTime?: string;
+  };
+  pricing: {
+    basePrice: number;
+    additionalCharges: number;
+    totalAmount: number;
+    currency: string;
+  };
+  status: 'pending' | 'confirmed' | 'in_progress' | 'completed' | 'cancelled';
+  payment: {
+    method: 'online' | 'cash' | 'wallet';
+    status: 'pending' | 'paid' | 'refunded';
+    transactionId?: string;
+  };
+  review?: {
+    rating: number;
+    comment: string;
+    images?: string[];
+  };
+}
 
-const BookingServiceSchema = new Schema<BookingService>({
+const BookingServiceSchema = new Schema({
   category: { type: String, required: true },
   subcategory: { type: String, required: true },
   description: { type: String, required: true, maxlength: 500 },
   estimatedDuration: { type: Number, required: true, min: 0.5, max: 24 }
 }, { _id: false });
 
-const BookingLocationSchema = new Schema<BookingLocation>({
+const BookingLocationSchema = new Schema({
   address: { type: String, required: true },
   coordinates: { 
     type: [Number], 
@@ -27,7 +63,7 @@ const BookingLocationSchema = new Schema<BookingLocation>({
   instructions: { type: String, maxlength: 200 }
 }, { _id: false });
 
-const BookingScheduleSchema = new Schema<BookingSchedule>({
+const BookingScheduleSchema = new Schema({
   preferredDate: { type: String, required: true },
   preferredTime: { 
     type: String, 
@@ -41,14 +77,14 @@ const BookingScheduleSchema = new Schema<BookingSchedule>({
   }
 }, { _id: false });
 
-const BookingPricingSchema = new Schema<BookingPricing>({
+const BookingPricingSchema = new Schema({
   basePrice: { type: Number, required: true, min: 0 },
   additionalCharges: { type: Number, default: 0, min: 0 },
   totalAmount: { type: Number, required: true, min: 0 },
   currency: { type: String, default: 'INR' }
 }, { _id: false });
 
-const BookingPaymentSchema = new Schema<BookingPayment>({
+const BookingPaymentSchema = new Schema({
   method: { 
     type: String, 
     enum: ['online', 'cash', 'wallet'], 
@@ -62,7 +98,7 @@ const BookingPaymentSchema = new Schema<BookingPayment>({
   transactionId: { type: String }
 }, { _id: false });
 
-const BookingReviewSchema = new Schema<BookingReview>({
+const BookingReviewSchema = new Schema({
   rating: { type: Number, required: true, min: 1, max: 5 },
   comment: { type: String, maxlength: 500 },
   images: [{ type: String }]
@@ -85,7 +121,7 @@ const BookingSchema = new Schema<IBookingDocument>({
   pricing: { type: BookingPricingSchema, required: true },
   status: { 
     type: String, 
-    enum: ['pending', 'confirmed', 'in_progress', 'completed', 'cancelled'] as BookingStatus[], 
+    enum: ['pending', 'confirmed', 'in_progress', 'completed', 'cancelled'], 
     default: 'pending' 
   },
   payment: { type: BookingPaymentSchema, required: true },

@@ -4,7 +4,8 @@ import { Provider } from '../models/Provider.js';
 import { User } from '../models/User.js';
 import { logger } from '../config/logger.js';
 import { authenticateToken, AuthRequest } from '../middleware/auth.js';
-import { body, handleValidationErrors } from '../middleware/validation.js';
+import { handleValidationErrors } from '../middleware/validation.js';
+import { body } from 'express-validator';
 
 const router = Router();
 

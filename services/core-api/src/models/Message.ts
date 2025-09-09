@@ -1,9 +1,20 @@
 import mongoose, { Schema, Document } from 'mongoose';
-import { Message as IMessage, MessageType, MessageAttachment } from '@localkart/shared-types';
 
-export interface IMessageDocument extends IMessage, Document {}
+export interface IMessageDocument extends Document {
+  bookingId: mongoose.Types.ObjectId;
+  senderId: mongoose.Types.ObjectId;
+  receiverId: mongoose.Types.ObjectId;
+  content: string;
+  type: 'text' | 'image' | 'file' | 'location';
+  attachments?: Array<{
+    url: string;
+    filename: string;
+    size: number;
+  }>;
+  isRead: boolean;
+}
 
-const MessageAttachmentSchema = new Schema<MessageAttachment>({
+const MessageAttachmentSchema = new Schema({
   url: { type: String, required: true },
   filename: { type: String, required: true },
   size: { type: Number, required: true, min: 0 }
@@ -28,7 +39,7 @@ const MessageSchema = new Schema<IMessageDocument>({
   content: { type: String, required: true, maxlength: 1000 },
   type: { 
     type: String, 
-    enum: ['text', 'image', 'file', 'location'] as MessageType[], 
+    enum: ['text', 'image', 'file', 'location'], 
     default: 'text' 
   },
   attachments: [MessageAttachmentSchema],
