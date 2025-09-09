@@ -1,0 +1,33 @@
+{
+  "name": "@localkart/shared-types",
+  "version": "0.1.0",
+  "description": "Shared TypeScript interfaces derived from the LocalKart ERD",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc -p tsconfig.json"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.2"
+  }
+}
+
+{
+  "name": "@localkart/shared-types",
+  "version": "1.0.0",
+  "main": "dist/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsc -p tsconfig.json"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "type": "module",
+  "types": "dist/index.d.ts",
+  "devDependencies": {
+    "typescript": "^5.9.2"
+  }
+}
