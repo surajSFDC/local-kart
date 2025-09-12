@@ -1,7 +1,7 @@
 import mongoose, { Schema, Document } from 'mongoose';
 import { Message as IMessage, MessageType, MessageAttachment } from '@localkart/shared-types';
 
-export interface IMessageDocument extends IMessage, Document {}
+export interface IMessageDocument extends Omit<IMessage, '_id'>, Document {}
 
 const MessageAttachmentSchema = new Schema<MessageAttachment>({
   url: { type: String, required: true },
@@ -10,18 +10,18 @@ const MessageAttachmentSchema = new Schema<MessageAttachment>({
 }, { _id: false });
 
 const MessageSchema = new Schema<IMessageDocument>({
-  bookingId: { 
-    type: Schema.Types.ObjectId, 
-    ref: 'Booking', 
-    required: true 
+  bookingId: {
+    type: Schema.Types.ObjectId as any,
+    ref: 'Booking',
+    required: true
   },
   senderId: { 
-    type: Schema.Types.ObjectId, 
+    type: Schema.Types.ObjectId as any, 
     ref: 'User', 
     required: true 
   },
   receiverId: { 
-    type: Schema.Types.ObjectId, 
+    type: Schema.Types.ObjectId as any, 
     ref: 'User', 
     required: true 
   },

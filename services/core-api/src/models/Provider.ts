@@ -1,7 +1,7 @@
 import mongoose, { Schema, Document } from 'mongoose';
 import { Provider as IProvider, ProviderServiceItem, ProviderServiceArea, ProviderAvailability, ProviderRating, ProviderPortfolioItem, ProviderDocumentItem, AIGeneratedProfile } from '@localkart/shared-types';
 
-export interface IProviderDocument extends IProvider, Document {}
+export interface IProviderDocument extends Omit<IProvider, '_id'>, Document {}
 
 const ProviderServiceItemSchema = new Schema<ProviderServiceItem>({
   category: { type: String, required: true },
@@ -55,7 +55,7 @@ const AIGeneratedProfileSchema = new Schema<AIGeneratedProfile>({
 
 const ProviderSchema = new Schema<IProviderDocument>({
   userId: { 
-    type: Schema.Types.ObjectId, 
+    type: Schema.Types.ObjectId as any, 
     ref: 'User', 
     required: true, 
     unique: true 

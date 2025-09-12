@@ -1,4 +1,4 @@
-import { Router } from 'express';
+import { Router, Response } from 'express';
 import { Booking } from '../models/Booking.js';
 import { Provider } from '../models/Provider.js';
 import { User } from '../models/User.js';
@@ -22,7 +22,7 @@ router.post('/', authenticateToken, [
   body('pricing.basePrice').isNumeric().isFloat({ min: 0 }).withMessage('Base price must be a positive number'),
   body('payment.method').isIn(['online', 'cash', 'wallet']).withMessage('Payment method must be online, cash, or wallet'),
   handleValidationErrors
-], async (req: AuthRequest, res) => {
+], async (req: AuthRequest, res: Response) => {
   try {
     const customerId = req.user!.userId;
     const { providerId, service, location, schedule, pricing, payment } = req.body;
@@ -87,7 +87,7 @@ router.post('/', authenticateToken, [
 });
 
 // Get user's bookings
-router.get('/my-bookings', authenticateToken, async (req: AuthRequest, res) => {
+router.get('/my-bookings', authenticateToken, async (req: AuthRequest, res: Response) => {
   try {
     const userId = req.user!.userId;
     const { status, page = 1, limit = 20 } = req.query;
@@ -130,7 +130,7 @@ router.get('/my-bookings', authenticateToken, async (req: AuthRequest, res) => {
 });
 
 // Get provider's bookings
-router.get('/provider-bookings', authenticateToken, async (req: AuthRequest, res) => {
+router.get('/provider-bookings', authenticateToken, async (req: AuthRequest, res: Response) => {
   try {
     const userId = req.user!.userId;
     const { status, page = 1, limit = 20 } = req.query;
@@ -185,7 +185,7 @@ router.get('/provider-bookings', authenticateToken, async (req: AuthRequest, res
 });
 
 // Get booking by ID
-router.get('/:id', authenticateToken, async (req: AuthRequest, res) => {
+router.get('/:id', authenticateToken, async (req: AuthRequest, res: Response) => {
   try {
     const { id } = req.params;
     const userId = req.user!.userId;
@@ -205,7 +205,7 @@ router.get('/:id', authenticateToken, async (req: AuthRequest, res) => {
     }
 
     // Check if user has access to this booking
-    if (booking.customerId.toString() !== userId && booking.providerId.userId !== userId) {
+    if (booking.customerId.toString() !== userId && booking.providerId.toString() !== userId) {
       return res.status(403).json({
         success: false,
         error: {
@@ -237,7 +237,7 @@ router.put('/:id/status', authenticateToken, [
   body('confirmedDate').optional().isISO8601().withMessage('Confirmed date must be a valid date'),
   body('confirmedTime').optional().matches(/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/).withMessage('Confirmed time must be in HH:MM format'),
   handleValidationErrors
-], async (req: AuthRequest, res) => {
+], async (req: AuthRequest, res: Response) => {
   try {
     const { id } = req.params;
     const { status, confirmedDate, confirmedTime } = req.body;
@@ -267,7 +267,7 @@ router.put('/:id/status', authenticateToken, [
     }
 
     // Check if provider owns this booking
-    if (booking.providerId.toString() !== provider._id.toString()) {
+    if (booking.providerId.toString() !== (provider._id as any).toString()) {
       return res.status(403).json({
         success: false,
         error: {

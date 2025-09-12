@@ -1,14 +1,14 @@
-import { Router } from 'express';
+import { Router, Response } from 'express';
 import jwt from 'jsonwebtoken';
 import { User } from '../models/User.js';
 import { logger } from '../config/logger.js';
 import { validateRegistration, validateLogin, handleValidationErrors } from '../middleware/validation.js';
-import { authenticateToken } from '../middleware/auth.js';
+import { authenticateToken, AuthRequest } from '../middleware/auth.js';
 
 const router = Router();
 
 // Register
-router.post('/register', validateRegistration, handleValidationErrors, async (req, res) => {
+router.post('/register', validateRegistration, handleValidationErrors, async (req: AuthRequest, res: Response) => {
   try {
     const { email, password, profile, role = 'customer' } = req.body;
 
@@ -76,7 +76,7 @@ router.post('/register', validateRegistration, handleValidationErrors, async (re
 });
 
 // Login
-router.post('/login', validateLogin, handleValidationErrors, async (req, res) => {
+router.post('/login', validateLogin, handleValidationErrors, async (req: AuthRequest, res: Response) => {
   try {
     const { email, password } = req.body;
 
@@ -157,7 +157,7 @@ router.post('/login', validateLogin, handleValidationErrors, async (req, res) =>
 });
 
 // Get current user profile
-router.get('/me', authenticateToken, async (req, res) => {
+router.get('/me', authenticateToken, async (req: AuthRequest, res: Response) => {
   try {
     const user = await User.findById(req.user!.userId);
     if (!user) {
@@ -198,7 +198,7 @@ router.get('/me', authenticateToken, async (req, res) => {
 });
 
 // Update user profile
-router.put('/me', authenticateToken, async (req, res) => {
+router.put('/me', authenticateToken, async (req: AuthRequest, res: Response) => {
   try {
     const { profile } = req.body;
     const userId = req.user!.userId;

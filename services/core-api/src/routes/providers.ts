@@ -1,4 +1,4 @@
-import { Router } from 'express';
+import { Router, Response } from 'express';
 import { Provider } from '../models/Provider.js';
 import { User } from '../models/User.js';
 import { logger } from '../config/logger.js';
@@ -8,7 +8,7 @@ import { validateProviderRegistration, handleValidationErrors } from '../middlew
 const router = Router();
 
 // Register as provider
-router.post('/register', authenticateToken, authorizeRoles('customer'), validateProviderRegistration, handleValidationErrors, async (req: AuthRequest, res) => {
+router.post('/register', authenticateToken, authorizeRoles('customer'), validateProviderRegistration, handleValidationErrors, async (req: AuthRequest, res: Response) => {
   try {
     const userId = req.user!.userId;
     const { businessName, description, services, serviceAreas, availability } = req.body;
@@ -27,10 +27,10 @@ router.post('/register', authenticateToken, authorizeRoles('customer'), validate
 
     // Create AI-generated profile (simplified for MVP)
     const aiGeneratedProfile = {
-      summary: `Professional ${services[0]?.category || 'service'} provider with expertise in ${services.map(s => s.subcategory).join(', ')}`,
-      skills: services.map(s => s.subcategory),
+      summary: `Professional ${services[0]?.category || 'service'} provider with expertise in ${services.map((s: any) => s.subcategory).join(', ')}`,
+      skills: services.map((s: any) => s.subcategory),
       experience: 'Experienced professional',
-      specialties: services.map(s => s.subcategory)
+      specialties: services.map((s: any) => s.subcategory)
     };
 
     // Create provider profile
@@ -89,7 +89,7 @@ router.post('/register', authenticateToken, authorizeRoles('customer'), validate
 });
 
 // Get provider profile
-router.get('/profile', authenticateToken, authorizeRoles('provider'), async (req: AuthRequest, res) => {
+router.get('/profile', authenticateToken, authorizeRoles('provider'), async (req: AuthRequest, res: Response) => {
   try {
     const userId = req.user!.userId;
     const provider = await Provider.findOne({ userId });
@@ -121,7 +121,7 @@ router.get('/profile', authenticateToken, authorizeRoles('provider'), async (req
 });
 
 // Update provider profile
-router.put('/profile', authenticateToken, authorizeRoles('provider'), async (req: AuthRequest, res) => {
+router.put('/profile', authenticateToken, authorizeRoles('provider'), async (req: AuthRequest, res: Response) => {
   try {
     const userId = req.user!.userId;
     const updateData = req.body;
@@ -161,7 +161,7 @@ router.put('/profile', authenticateToken, authorizeRoles('provider'), async (req
 });
 
 // Search providers
-router.get('/search', async (req, res) => {
+router.get('/search', async (req: AuthRequest, res: Response) => {
   try {
     const { 
       city, 
@@ -236,7 +236,7 @@ router.get('/search', async (req, res) => {
 });
 
 // Get provider by ID
-router.get('/:id', async (req, res) => {
+router.get('/:id', async (req: AuthRequest, res: Response) => {
   try {
     const { id } = req.params;
     const provider = await Provider.findById(id)

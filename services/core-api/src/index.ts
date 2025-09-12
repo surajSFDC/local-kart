@@ -10,9 +10,9 @@ import { Server } from 'socket.io';
 import connectDB from './config/database.js';
 import { logger } from './config/logger.js';
 import { router as healthRouter } from './routes/health.js';
-import { router as authRouter } from './routes/auth.js';
-import { router as providersRouter } from './routes/providers.js';
-import { router as bookingsRouter } from './routes/bookings.js';
+import { authRouter } from './routes/auth.js';
+import { providersRouter } from './routes/providers.js';
+import { bookingsRouter } from './routes/bookings.js';
 
 // Load environment variables
 dotenv.config();
@@ -107,7 +107,7 @@ app.use((err: any, req: express.Request, res: express.Response, next: express.Ne
 });
 
 // 404 handler
-app.use('*', (req, res) => {
+app.use((req, res) => {
   res.status(404).json({
     success: false,
     error: {

@@ -1,3 +1,6 @@
 {
-  "agentCanUpdateSnapshot": true
+  "snapshot": "snapshot-20250909-2b76ba66-547d-4148-bcde-fd2efc0b7650",
+  "install": "npm instal",
+  "start": "npm run dev -w @localkart/core-api",
+  "terminals": []
 }

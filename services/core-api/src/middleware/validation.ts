@@ -2,6 +2,9 @@ import { Request, Response, NextFunction } from 'express';
 import { body, validationResult, ValidationChain } from 'express-validator';
 import { logger } from '../config/logger.js';
 
+// Re-export body for use in other files
+export { body };
+
 export const handleValidationErrors = (req: Request, res: Response, next: NextFunction) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {

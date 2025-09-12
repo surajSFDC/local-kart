@@ -1,0 +1,1727 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Markdown: Rich Preview</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github-dark.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+    <script>
+        // Initialize highlight.js
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('pre code').forEach((block) => {
+                hljs.highlightElement(block);
+            });
+        });
+
+        // Copy to clipboard function
+        function copyToClipboard(button) {
+            const codeBlock = button.closest('.code-block');
+            const code = codeBlock.querySelector('code').textContent;
+            navigator.clipboard.writeText(code).then(() => {
+                const originalText = button.textContent;
+                button.textContent = 'Copied!';
+                button.style.backgroundColor = '#4CAF50';
+                button.style.color = 'white';
+                setTimeout(() => {
+                    button.textContent = originalText;
+                    button.style.backgroundColor = '';
+                    button.style.color = '';
+                }, 2000);
+            }).catch(err => {
+                console.error('Failed to copy: ', err);
+            });
+        }
+    </script>
+    <style>
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe WPC', 'Segoe UI', system-ui, 'Ubuntu', 'Droid Sans', sans-serif;
+            font-size: 14px;
+            line-height: 1.6;
+            padding: 0 20px;
+        }
+        /* Twemoji emoji image style for inline, text-sized emojis */
+        img.emoji {
+            height: 1em;
+            width: 1em;
+            margin: 0 .05em 0 .1em;
+            vertical-align: -0.1em;
+            display: inline;
+        }
+        
+        h1, h2, h3, h4, h5, h6 {
+            font-weight: 600;
+            margin-top: 24px;
+            margin-bottom: 16px;
+            line-height: 1.25;
+        }
+        
+        h1 { 
+            font-size: 2em; 
+            border-bottom: 1px solid #eaecef; 
+            padding-bottom: 0.3em;
+            margin-top: 0.67em 0;
+        }
+        
+        h2 { 
+            font-size: 1.5em; 
+            border-bottom: 1px solid #eaecef; 
+            padding-bottom: 0.3em;
+            margin-top: 1.5em;
+        }
+        
+        h3 { 
+            font-size: 1.25em; 
+            margin-top: 1.25em;
+        }
+        
+        h4 { 
+            font-size: 1em; 
+            margin-top: 1em;
+        }
+        
+        a { 
+            color: #0366d6; 
+            text-decoration: none; 
+        }
+        
+        a:hover { 
+            text-decoration: underline; 
+        }
+        
+        strong { 
+            font-weight: 600; 
+        }
+        
+        pre {
+            background-color:rgb(9, 7, 10);
+            overflow: auto;
+            margin: 0;
+        }
+        
+        code {
+            font-family: SFMono-Regular, Consolas, 'Liberation Mono', Menlo, monospace;
+            padding: 0.2em 0.4em;
+            font-size: 90%;
+        }
+        
+        pre code {
+            background-color: transparent;
+            padding: 0;
+        }
+
+        .code-block {
+            position: relative;
+            background-color:rgb(9, 7, 10);
+            border-radius: 6px;
+            margin: 1em 0;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .code-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 4px 10px;
+            background-color:rgb(32, 30, 43);
+            border-top-left-radius: 6px;
+            border-top-right-radius: 6px;
+        }
+
+        .language {
+            color: #efe9e9;
+            font-size: 0.9em;
+            font-family: SFMono-Regular, Consolas, 'Liberation Mono', Menlo, monospace;
+        }
+
+        .copy-button {
+            padding: 4px 8px;
+            font-size: 0.9em;
+            color: #efe9e9;
+            background-color: transparent;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .copy-button:hover {
+            background-color: #e9e9e9;
+            border-color: #ccc;
+        }
+        
+        blockquote {
+            margin: 0;
+            padding: 0 1em;
+            color: #6a737d;
+            border-left: 0.25em solid #dfe2e5;
+        }
+        
+        ul, ol {
+            padding-left: 2em;
+        }
+        
+        table {
+            border-collapse: collapse;
+            border-spacing: 0;
+            width: 100%;
+            overflow: auto;
+            margin-bottom: 16px;
+        }
+        
+        table th {
+            font-weight: 600;
+        }
+        
+        table th, table td {
+            padding: 6px 13px;
+            border: 1px solid #dfe2e5;
+        }
+        
+        table tr {
+            background-color: #fff;
+            border-top: 1px solid #c6cbd1;
+        }
+        
+        table tr:nth-child(2n) {
+            background-color: #f6f8fa;
+        }
+        
+        img {
+            max-width: 100%;
+            box-sizing: content-box;
+        }
+    </style>
+</head>
+<body>
+    <h1>Engineering Review Document (ERD)</h1>
+<h2>LocalKart - AI-Powered Local Services Platform</h2>
+<p><strong>Version</strong>: 1.0<br><strong>Date</strong>: December 2024<br><strong>Project</strong>: LocalKart (LocalAI Platform)<br><strong>Document Type</strong>: Engineering Review Document  </p>
+<hr>
+<h2>1. Executive Summary</h2>
+<p>This Engineering Review Document provides a comprehensive technical analysis and implementation strategy for the LocalKart platform. It covers system architecture, technology stack, data models, API design, security considerations, and deployment strategies to build a scalable, maintainable, and high-performance platform.</p>
+<h2>2. System Architecture Overview</h2>
+<h3>2.1 High-Level Architecture</h3>
+
+                <div class="code-block">
+                    <div class="code-header">
+                        <span class="language">plaintext</span>
+                        <button class="copy-button" onclick="copyToClipboard(this)" title="Copy to clipboard">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <pre><code class="hljs language-plaintext">┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
+│   Client App    │    │   Admin Panel   │    │   Mobile App    │
+│   (React/TS)    │    │   (React/TS)    │    │   (React Native)│
+└─────────┬───────┘    └─────────┬───────┘    └─────────┬───────┘
+          │                      │                      │
+          └──────────────────────┼──────────────────────┘
+                                 │
+                    ┌─────────────┴─────────────┐
+                    │      API Gateway          │
+                    │    (Express.js + TS)      │
+                    └─────────────┬─────────────┘
+                                  │
+        ┌─────────────────────────┼─────────────────────────┐
+        │                         │                         │
+┌───────▼───────┐    ┌───────────▼───────────┐    ┌────────▼────────┐
+│  Auth Service │    │   Core API Service    │    │  AI Service     │
+│  (JWT + OAuth)│    │   (Express.js + TS)   │    │  (OpenAI API)   │
+└───────────────┘    └───────────┬───────────┘    └─────────────────┘
+                                 │
+                    ┌─────────────┴─────────────┐
+                    │      Database Layer       │
+                    │    (MongoDB + Redis)      │
+                    └───────────────────────────┘</code></pre>
+                </div>
+            <h3>2.2 Microservices Architecture</h3>
+<p>The platform follows a microservices architecture with the following services:</p>
+<ol>
+<li><strong>Authentication Service</strong> - User management and JWT handling</li>
+<li><strong>Core API Service</strong> - Business logic and data management</li>
+<li><strong>AI Service</strong> - Profile generation and smart matching</li>
+<li><strong>Notification Service</strong> - Real-time messaging and notifications</li>
+<li><strong>Payment Service</strong> - Payment processing and billing</li>
+<li><strong>Search Service</strong> - Advanced search and filtering</li>
+</ol>
+<h2>3. Technology Stack</h2>
+<h3>3.1 Frontend Technologies</h3>
+<table>
+<thead>
+<tr>
+<th>Component</th>
+<th>Technology</th>
+<th>Version</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Framework</td>
+<td>React</td>
+<td>18.x</td>
+<td>UI framework</td>
+</tr>
+<tr>
+<td>Language</td>
+<td>TypeScript</td>
+<td>5.x</td>
+<td>Type safety</td>
+</tr>
+<tr>
+<td>Styling</td>
+<td>Tailwind CSS</td>
+<td>3.x</td>
+<td>Utility-first CSS</td>
+</tr>
+<tr>
+<td>State Management</td>
+<td>Redux Toolkit</td>
+<td>2.x</td>
+<td>Global state</td>
+</tr>
+<tr>
+<td>Routing</td>
+<td>React Router</td>
+<td>6.x</td>
+<td>Client-side routing</td>
+</tr>
+<tr>
+<td>HTTP Client</td>
+<td>Axios</td>
+<td>1.x</td>
+<td>API communication</td>
+</tr>
+<tr>
+<td>Real-time</td>
+<td>Socket.io Client</td>
+<td>4.x</td>
+<td>WebSocket communication</td>
+</tr>
+<tr>
+<td>Maps</td>
+<td>Google Maps API</td>
+<td>Latest</td>
+<td>Location services</td>
+</tr>
+<tr>
+<td>Charts</td>
+<td>Chart.js</td>
+<td>4.x</td>
+<td>Analytics visualization</td>
+</tr>
+</tbody></table>
+<h3>3.2 Backend Technologies</h3>
+<table>
+<thead>
+<tr>
+<th>Component</th>
+<th>Technology</th>
+<th>Version</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Runtime</td>
+<td>Node.js</td>
+<td>20.x LTS</td>
+<td>JavaScript runtime</td>
+</tr>
+<tr>
+<td>Framework</td>
+<td>Express.js</td>
+<td>4.x</td>
+<td>Web framework</td>
+</tr>
+<tr>
+<td>Language</td>
+<td>TypeScript</td>
+<td>5.x</td>
+<td>Type safety</td>
+</tr>
+<tr>
+<td>Database</td>
+<td>MongoDB</td>
+<td>7.x</td>
+<td>Primary database</td>
+</tr>
+<tr>
+<td>Cache</td>
+<td>Redis</td>
+<td>7.x</td>
+<td>Caching layer</td>
+</tr>
+<tr>
+<td>ORM</td>
+<td>Mongoose</td>
+<td>8.x</td>
+<td>MongoDB object modeling</td>
+</tr>
+<tr>
+<td>Authentication</td>
+<td>JWT</td>
+<td>9.x</td>
+<td>Token-based auth</td>
+</tr>
+<tr>
+<td>Real-time</td>
+<td>Socket.io</td>
+<td>4.x</td>
+<td>WebSocket server</td>
+</tr>
+<tr>
+<td>File Upload</td>
+<td>Multer</td>
+<td>1.x</td>
+<td>File handling</td>
+</tr>
+<tr>
+<td>Image Processing</td>
+<td>Sharp</td>
+<td>0.x</td>
+<td>Image optimization</td>
+</tr>
+</tbody></table>
+<h3>3.3 AI &amp; ML Technologies</h3>
+<table>
+<thead>
+<tr>
+<th>Component</th>
+<th>Technology</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Language Model</td>
+<td>OpenAI GPT-4</td>
+<td>Profile generation</td>
+</tr>
+<tr>
+<td>Translation</td>
+<td>Google Translate API</td>
+<td>Multilingual support</td>
+</tr>
+<tr>
+<td>Text Processing</td>
+<td>Natural</td>
+<td>NLP utilities</td>
+</tr>
+<tr>
+<td>Vector Search</td>
+<td>MongoDB Atlas Search</td>
+<td>Semantic search</td>
+</tr>
+<tr>
+<td>Recommendation</td>
+<td>Custom Algorithm</td>
+<td>Smart matching</td>
+</tr>
+</tbody></table>
+<h3>3.4 Infrastructure &amp; DevOps</h3>
+<table>
+<thead>
+<tr>
+<th>Component</th>
+<th>Technology</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Cloud Provider</td>
+<td>AWS</td>
+<td>Cloud infrastructure</td>
+</tr>
+<tr>
+<td>Containerization</td>
+<td>Docker</td>
+<td>Application containers</td>
+</tr>
+<tr>
+<td>Orchestration</td>
+<td>Kubernetes</td>
+<td>Container orchestration</td>
+</tr>
+<tr>
+<td>CI/CD</td>
+<td>GitHub Actions</td>
+<td>Automated deployment</td>
+</tr>
+<tr>
+<td>Monitoring</td>
+<td>DataDog</td>
+<td>Application monitoring</td>
+</tr>
+<tr>
+<td>Logging</td>
+<td>Winston</td>
+<td>Application logging</td>
+</tr>
+<tr>
+<td>CDN</td>
+<td>CloudFront</td>
+<td>Content delivery</td>
+</tr>
+</tbody></table>
+<h2>4. Database Design</h2>
+<h3>4.1 MongoDB Collections</h3>
+<h4>Users Collection</h4>
+
+                <div class="code-block">
+                    <div class="code-header">
+                        <span class="language">typescript</span>
+                        <button class="copy-button" onclick="copyToClipboard(this)" title="Copy to clipboard">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <pre><code class="hljs language-typescript"><span class="hljs-keyword">interface</span> <span class="hljs-title class_">User</span> {
+  <span class="hljs-attr">_id</span>: <span class="hljs-title class_">ObjectId</span>;
+  <span class="hljs-attr">email</span>: <span class="hljs-built_in">string</span>;
+  <span class="hljs-attr">password</span>: <span class="hljs-built_in">string</span>; <span class="hljs-comment">// hashed</span>
+  <span class="hljs-attr">role</span>: <span class="hljs-string">&#x27;customer&#x27;</span> | <span class="hljs-string">&#x27;provider&#x27;</span> | <span class="hljs-string">&#x27;admin&#x27;</span>;
+  <span class="hljs-attr">profile</span>: {
+    <span class="hljs-attr">firstName</span>: <span class="hljs-built_in">string</span>;
+    <span class="hljs-attr">lastName</span>: <span class="hljs-built_in">string</span>;
+    <span class="hljs-attr">phone</span>: <span class="hljs-built_in">string</span>;
+    <span class="hljs-attr">avatar</span>?: <span class="hljs-built_in">string</span>;
+    <span class="hljs-attr">language</span>: <span class="hljs-built_in">string</span>;
+    <span class="hljs-attr">location</span>: {
+      <span class="hljs-attr">address</span>: <span class="hljs-built_in">string</span>;
+      <span class="hljs-attr">coordinates</span>: [<span class="hljs-built_in">number</span>, <span class="hljs-built_in">number</span>]; <span class="hljs-comment">// [lng, lat]</span>
+      <span class="hljs-attr">city</span>: <span class="hljs-built_in">string</span>;
+      <span class="hljs-attr">state</span>: <span class="hljs-built_in">string</span>;
+      <span class="hljs-attr">pincode</span>: <span class="hljs-built_in">string</span>;
+    };
+  };
+  <span class="hljs-attr">isVerified</span>: <span class="hljs-built_in">boolean</span>;
+  <span class="hljs-attr">isActive</span>: <span class="hljs-built_in">boolean</span>;
+  <span class="hljs-attr">createdAt</span>: <span class="hljs-title class_">Date</span>;
+  <span class="hljs-attr">updatedAt</span>: <span class="hljs-title class_">Date</span>;
+}</code></pre>
+                </div>
+            <h4>Providers Collection</h4>
+
+                <div class="code-block">
+                    <div class="code-header">
+                        <span class="language">typescript</span>
+                        <button class="copy-button" onclick="copyToClipboard(this)" title="Copy to clipboard">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <pre><code class="hljs language-typescript"><span class="hljs-keyword">interface</span> <span class="hljs-title class_">Provider</span> {
+  <span class="hljs-attr">_id</span>: <span class="hljs-title class_">ObjectId</span>;
+  <span class="hljs-attr">userId</span>: <span class="hljs-title class_">ObjectId</span>;
+  <span class="hljs-attr">businessName</span>: <span class="hljs-built_in">string</span>;
+  <span class="hljs-attr">description</span>: <span class="hljs-built_in">string</span>;
+  <span class="hljs-attr">aiGeneratedProfile</span>: {
+    <span class="hljs-attr">summary</span>: <span class="hljs-built_in">string</span>;
+    <span class="hljs-attr">skills</span>: <span class="hljs-built_in">string</span>[];
+    <span class="hljs-attr">experience</span>: <span class="hljs-built_in">string</span>;
+    <span class="hljs-attr">specialties</span>: <span class="hljs-built_in">string</span>[];
+  };
+  <span class="hljs-attr">services</span>: {
+    <span class="hljs-attr">category</span>: <span class="hljs-built_in">string</span>;
+    <span class="hljs-attr">subcategory</span>: <span class="hljs-built_in">string</span>;
+    <span class="hljs-attr">basePrice</span>: <span class="hljs-built_in">number</span>;
+    <span class="hljs-attr">unit</span>: <span class="hljs-string">&#x27;hour&#x27;</span> | <span class="hljs-string">&#x27;service&#x27;</span> | <span class="hljs-string">&#x27;square_feet&#x27;</span>;
+  }[];
+  <span class="hljs-attr">serviceAreas</span>: {
+    <span class="hljs-attr">city</span>: <span class="hljs-built_in">string</span>;
+    <span class="hljs-attr">pincodes</span>: <span class="hljs-built_in">string</span>[];
+    <span class="hljs-attr">radius</span>: <span class="hljs-built_in">number</span>; <span class="hljs-comment">// in km</span>
+  }[];
+  <span class="hljs-attr">availability</span>: {
+    <span class="hljs-attr">days</span>: <span class="hljs-built_in">string</span>[]; <span class="hljs-comment">// [&#x27;monday&#x27;, &#x27;tuesday&#x27;, ...]</span>
+    <span class="hljs-attr">timeSlots</span>: {
+      <span class="hljs-attr">start</span>: <span class="hljs-built_in">string</span>; <span class="hljs-comment">// &#x27;09:00&#x27;</span>
+      <span class="hljs-attr">end</span>: <span class="hljs-built_in">string</span>;   <span class="hljs-comment">// &#x27;18:00&#x27;</span>
+    }[];
+  };
+  <span class="hljs-attr">rating</span>: {
+    <span class="hljs-attr">average</span>: <span class="hljs-built_in">number</span>;
+    <span class="hljs-attr">count</span>: <span class="hljs-built_in">number</span>;
+  };
+  <span class="hljs-attr">portfolio</span>: {
+    <span class="hljs-attr">images</span>: <span class="hljs-built_in">string</span>[];
+    <span class="hljs-attr">descriptions</span>: <span class="hljs-built_in">string</span>[];
+  }[];
+  <span class="hljs-attr">documents</span>: {
+    <span class="hljs-attr">type</span>: <span class="hljs-string">&#x27;license&#x27;</span> | <span class="hljs-string">&#x27;certificate&#x27;</span> | <span class="hljs-string">&#x27;insurance&#x27;</span>;
+    <span class="hljs-attr">url</span>: <span class="hljs-built_in">string</span>;
+    <span class="hljs-attr">verified</span>: <span class="hljs-built_in">boolean</span>;
+  }[];
+  <span class="hljs-attr">isVerified</span>: <span class="hljs-built_in">boolean</span>;
+  <span class="hljs-attr">isActive</span>: <span class="hljs-built_in">boolean</span>;
+  <span class="hljs-attr">createdAt</span>: <span class="hljs-title class_">Date</span>;
+  <span class="hljs-attr">updatedAt</span>: <span class="hljs-title class_">Date</span>;
+}</code></pre>
+                </div>
+            <h4>Bookings Collection</h4>
+
+                <div class="code-block">
+                    <div class="code-header">
+                        <span class="language">typescript</span>
+                        <button class="copy-button" onclick="copyToClipboard(this)" title="Copy to clipboard">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <pre><code class="hljs language-typescript"><span class="hljs-keyword">interface</span> <span class="hljs-title class_">Booking</span> {
+  <span class="hljs-attr">_id</span>: <span class="hljs-title class_">ObjectId</span>;
+  <span class="hljs-attr">customerId</span>: <span class="hljs-title class_">ObjectId</span>;
+  <span class="hljs-attr">providerId</span>: <span class="hljs-title class_">ObjectId</span>;
+  <span class="hljs-attr">service</span>: {
+    <span class="hljs-attr">category</span>: <span class="hljs-built_in">string</span>;
+    <span class="hljs-attr">subcategory</span>: <span class="hljs-built_in">string</span>;
+    <span class="hljs-attr">description</span>: <span class="hljs-built_in">string</span>;
+    <span class="hljs-attr">estimatedDuration</span>: <span class="hljs-built_in">number</span>; <span class="hljs-comment">// in hours</span>
+  };
+  <span class="hljs-attr">location</span>: {
+    <span class="hljs-attr">address</span>: <span class="hljs-built_in">string</span>;
+    <span class="hljs-attr">coordinates</span>: [<span class="hljs-built_in">number</span>, <span class="hljs-built_in">number</span>];
+    <span class="hljs-attr">instructions</span>?: <span class="hljs-built_in">string</span>;
+  };
+  <span class="hljs-attr">schedule</span>: {
+    <span class="hljs-attr">preferredDate</span>: <span class="hljs-title class_">Date</span>;
+    <span class="hljs-attr">preferredTime</span>: <span class="hljs-built_in">string</span>;
+    <span class="hljs-attr">confirmedDate</span>?: <span class="hljs-title class_">Date</span>;
+    <span class="hljs-attr">confirmedTime</span>?: <span class="hljs-built_in">string</span>;
+  };
+  <span class="hljs-attr">pricing</span>: {
+    <span class="hljs-attr">basePrice</span>: <span class="hljs-built_in">number</span>;
+    <span class="hljs-attr">additionalCharges</span>: <span class="hljs-built_in">number</span>;
+    <span class="hljs-attr">totalAmount</span>: <span class="hljs-built_in">number</span>;
+    <span class="hljs-attr">currency</span>: <span class="hljs-built_in">string</span>;
+  };
+  <span class="hljs-attr">status</span>: <span class="hljs-string">&#x27;pending&#x27;</span> | <span class="hljs-string">&#x27;confirmed&#x27;</span> | <span class="hljs-string">&#x27;in_progress&#x27;</span> | <span class="hljs-string">&#x27;completed&#x27;</span> | <span class="hljs-string">&#x27;cancelled&#x27;</span>;
+  <span class="hljs-attr">payment</span>: {
+    <span class="hljs-attr">method</span>: <span class="hljs-string">&#x27;online&#x27;</span> | <span class="hljs-string">&#x27;cash&#x27;</span> | <span class="hljs-string">&#x27;wallet&#x27;</span>;
+    <span class="hljs-attr">status</span>: <span class="hljs-string">&#x27;pending&#x27;</span> | <span class="hljs-string">&#x27;paid&#x27;</span> | <span class="hljs-string">&#x27;refunded&#x27;</span>;
+    <span class="hljs-attr">transactionId</span>?: <span class="hljs-built_in">string</span>;
+  };
+  <span class="hljs-attr">review</span>?: {
+    <span class="hljs-attr">rating</span>: <span class="hljs-built_in">number</span>;
+    <span class="hljs-attr">comment</span>: <span class="hljs-built_in">string</span>;
+    <span class="hljs-attr">images</span>?: <span class="hljs-built_in">string</span>[];
+  };
+  <span class="hljs-attr">createdAt</span>: <span class="hljs-title class_">Date</span>;
+  <span class="hljs-attr">updatedAt</span>: <span class="hljs-title class_">Date</span>;
+}</code></pre>
+                </div>
+            <h4>Messages Collection</h4>
+
+                <div class="code-block">
+                    <div class="code-header">
+                        <span class="language">typescript</span>
+                        <button class="copy-button" onclick="copyToClipboard(this)" title="Copy to clipboard">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <pre><code class="hljs language-typescript"><span class="hljs-keyword">interface</span> <span class="hljs-title class_">Message</span> {
+  <span class="hljs-attr">_id</span>: <span class="hljs-title class_">ObjectId</span>;
+  <span class="hljs-attr">bookingId</span>: <span class="hljs-title class_">ObjectId</span>;
+  <span class="hljs-attr">senderId</span>: <span class="hljs-title class_">ObjectId</span>;
+  <span class="hljs-attr">receiverId</span>: <span class="hljs-title class_">ObjectId</span>;
+  <span class="hljs-attr">content</span>: <span class="hljs-built_in">string</span>;
+  <span class="hljs-attr">type</span>: <span class="hljs-string">&#x27;text&#x27;</span> | <span class="hljs-string">&#x27;image&#x27;</span> | <span class="hljs-string">&#x27;file&#x27;</span> | <span class="hljs-string">&#x27;location&#x27;</span>;
+  <span class="hljs-attr">attachments</span>?: {
+    <span class="hljs-attr">url</span>: <span class="hljs-built_in">string</span>;
+    <span class="hljs-attr">filename</span>: <span class="hljs-built_in">string</span>;
+    <span class="hljs-attr">size</span>: <span class="hljs-built_in">number</span>;
+  }[];
+  <span class="hljs-attr">isRead</span>: <span class="hljs-built_in">boolean</span>;
+  <span class="hljs-attr">createdAt</span>: <span class="hljs-title class_">Date</span>;
+}</code></pre>
+                </div>
+            <h3>4.2 Database Indexes</h3>
+
+                <div class="code-block">
+                    <div class="code-header">
+                        <span class="language">javascript</span>
+                        <button class="copy-button" onclick="copyToClipboard(this)" title="Copy to clipboard">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <pre><code class="hljs language-javascript"><span class="hljs-comment">// Users collection indexes</span>
+db.<span class="hljs-property">users</span>.<span class="hljs-title function_">createIndex</span>({ <span class="hljs-attr">email</span>: <span class="hljs-number">1</span> }, { <span class="hljs-attr">unique</span>: <span class="hljs-literal">true</span> });
+db.<span class="hljs-property">users</span>.<span class="hljs-title function_">createIndex</span>({ <span class="hljs-string">&quot;profile.location.coordinates&quot;</span>: <span class="hljs-string">&quot;2dsphere&quot;</span> });
+db.<span class="hljs-property">users</span>.<span class="hljs-title function_">createIndex</span>({ <span class="hljs-attr">role</span>: <span class="hljs-number">1</span>, <span class="hljs-attr">isActive</span>: <span class="hljs-number">1</span> });
+
+<span class="hljs-comment">// Providers collection indexes</span>
+db.<span class="hljs-property">providers</span>.<span class="hljs-title function_">createIndex</span>({ <span class="hljs-attr">userId</span>: <span class="hljs-number">1</span> }, { <span class="hljs-attr">unique</span>: <span class="hljs-literal">true</span> });
+db.<span class="hljs-property">providers</span>.<span class="hljs-title function_">createIndex</span>({ <span class="hljs-string">&quot;serviceAreas.city&quot;</span>: <span class="hljs-number">1</span> });
+db.<span class="hljs-property">providers</span>.<span class="hljs-title function_">createIndex</span>({ <span class="hljs-string">&quot;services.category&quot;</span>: <span class="hljs-number">1</span> });
+db.<span class="hljs-property">providers</span>.<span class="hljs-title function_">createIndex</span>({ <span class="hljs-string">&quot;profile.location.coordinates&quot;</span>: <span class="hljs-string">&quot;2dsphere&quot;</span> });
+db.<span class="hljs-property">providers</span>.<span class="hljs-title function_">createIndex</span>({ <span class="hljs-attr">rating</span>: -<span class="hljs-number">1</span>, <span class="hljs-attr">isActive</span>: <span class="hljs-number">1</span> });
+
+<span class="hljs-comment">// Bookings collection indexes</span>
+db.<span class="hljs-property">bookings</span>.<span class="hljs-title function_">createIndex</span>({ <span class="hljs-attr">customerId</span>: <span class="hljs-number">1</span>, <span class="hljs-attr">createdAt</span>: -<span class="hljs-number">1</span> });
+db.<span class="hljs-property">bookings</span>.<span class="hljs-title function_">createIndex</span>({ <span class="hljs-attr">providerId</span>: <span class="hljs-number">1</span>, <span class="hljs-attr">createdAt</span>: -<span class="hljs-number">1</span> });
+db.<span class="hljs-property">bookings</span>.<span class="hljs-title function_">createIndex</span>({ <span class="hljs-attr">status</span>: <span class="hljs-number">1</span>, <span class="hljs-string">&quot;schedule.confirmedDate&quot;</span>: <span class="hljs-number">1</span> });
+db.<span class="hljs-property">bookings</span>.<span class="hljs-title function_">createIndex</span>({ <span class="hljs-string">&quot;location.coordinates&quot;</span>: <span class="hljs-string">&quot;2dsphere&quot;</span> });
+
+<span class="hljs-comment">// Messages collection indexes</span>
+db.<span class="hljs-property">messages</span>.<span class="hljs-title function_">createIndex</span>({ <span class="hljs-attr">bookingId</span>: <span class="hljs-number">1</span>, <span class="hljs-attr">createdAt</span>: -<span class="hljs-number">1</span> });
+db.<span class="hljs-property">messages</span>.<span class="hljs-title function_">createIndex</span>({ <span class="hljs-attr">senderId</span>: <span class="hljs-number">1</span>, <span class="hljs-attr">receiverId</span>: <span class="hljs-number">1</span> });</code></pre>
+                </div>
+            <h2>5. API Design</h2>
+<h3>5.1 RESTful API Endpoints</h3>
+<h4>Authentication Endpoints</h4>
+
+                <div class="code-block">
+                    <div class="code-header">
+                        <span class="language">plaintext</span>
+                        <button class="copy-button" onclick="copyToClipboard(this)" title="Copy to clipboard">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <pre><code class="hljs language-plaintext">POST   /api/auth/register
+POST   /api/auth/login
+POST   /api/auth/logout
+POST   /api/auth/refresh
+POST   /api/auth/forgot-password
+POST   /api/auth/reset-password
+GET    /api/auth/verify-email/:token</code></pre>
+                </div>
+            <h4>User Management Endpoints</h4>
+
+                <div class="code-block">
+                    <div class="code-header">
+                        <span class="language">plaintext</span>
+                        <button class="copy-button" onclick="copyToClipboard(this)" title="Copy to clipboard">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <pre><code class="hljs language-plaintext">GET    /api/users/profile
+PUT    /api/users/profile
+POST   /api/users/upload-avatar
+GET    /api/users/bookings
+GET    /api/users/messages</code></pre>
+                </div>
+            <h4>Provider Endpoints</h4>
+
+                <div class="code-block">
+                    <div class="code-header">
+                        <span class="language">plaintext</span>
+                        <button class="copy-button" onclick="copyToClipboard(this)" title="Copy to clipboard">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <pre><code class="hljs language-plaintext">POST   /api/providers/register
+GET    /api/providers/profile
+PUT    /api/providers/profile
+POST   /api/providers/generate-profile
+GET    /api/providers/services
+POST   /api/providers/services
+PUT    /api/providers/services/:id
+DELETE /api/providers/services/:id
+GET    /api/providers/bookings
+PUT    /api/providers/bookings/:id/status
+GET    /api/providers/analytics</code></pre>
+                </div>
+            <h4>Search Endpoints</h4>
+
+                <div class="code-block">
+                    <div class="code-header">
+                        <span class="language">plaintext</span>
+                        <button class="copy-button" onclick="copyToClipboard(this)" title="Copy to clipboard">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <pre><code class="hljs language-plaintext">GET    /api/search/providers
+GET    /api/search/services
+POST   /api/search/ai-recommendations
+GET    /api/search/suggestions</code></pre>
+                </div>
+            <h4>Booking Endpoints</h4>
+
+                <div class="code-block">
+                    <div class="code-header">
+                        <span class="language">plaintext</span>
+                        <button class="copy-button" onclick="copyToClipboard(this)" title="Copy to clipboard">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <pre><code class="hljs language-plaintext">POST   /api/bookings
+GET    /api/bookings/:id
+PUT    /api/bookings/:id
+DELETE /api/bookings/:id
+POST   /api/bookings/:id/confirm
+POST   /api/bookings/:id/cancel
+POST   /api/bookings/:id/complete</code></pre>
+                </div>
+            <h4>Messaging Endpoints</h4>
+
+                <div class="code-block">
+                    <div class="code-header">
+                        <span class="language">plaintext</span>
+                        <button class="copy-button" onclick="copyToClipboard(this)" title="Copy to clipboard">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <pre><code class="hljs language-plaintext">GET    /api/messages/:bookingId
+POST   /api/messages
+PUT    /api/messages/:id/read
+GET    /api/messages/conversations</code></pre>
+                </div>
+            <h3>5.2 API Response Format</h3>
+
+                <div class="code-block">
+                    <div class="code-header">
+                        <span class="language">typescript</span>
+                        <button class="copy-button" onclick="copyToClipboard(this)" title="Copy to clipboard">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <pre><code class="hljs language-typescript"><span class="hljs-keyword">interface</span> <span class="hljs-title class_">APIResponse</span>&lt;T&gt; {
+  <span class="hljs-attr">success</span>: <span class="hljs-built_in">boolean</span>;
+  <span class="hljs-attr">data</span>?: T;
+  <span class="hljs-attr">error</span>?: {
+    <span class="hljs-attr">code</span>: <span class="hljs-built_in">string</span>;
+    <span class="hljs-attr">message</span>: <span class="hljs-built_in">string</span>;
+    <span class="hljs-attr">details</span>?: <span class="hljs-built_in">any</span>;
+  };
+  <span class="hljs-attr">meta</span>?: {
+    <span class="hljs-attr">page</span>?: <span class="hljs-built_in">number</span>;
+    <span class="hljs-attr">limit</span>?: <span class="hljs-built_in">number</span>;
+    <span class="hljs-attr">total</span>?: <span class="hljs-built_in">number</span>;
+    <span class="hljs-attr">hasNext</span>?: <span class="hljs-built_in">boolean</span>;
+  };
+}</code></pre>
+                </div>
+            <h3>5.3 Error Handling</h3>
+
+                <div class="code-block">
+                    <div class="code-header">
+                        <span class="language">typescript</span>
+                        <button class="copy-button" onclick="copyToClipboard(this)" title="Copy to clipboard">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <pre><code class="hljs language-typescript"><span class="hljs-keyword">enum</span> <span class="hljs-title class_">ErrorCodes</span> {
+  <span class="hljs-variable constant_">VALIDATION_ERROR</span> = <span class="hljs-string">&#x27;VALIDATION_ERROR&#x27;</span>,
+  <span class="hljs-variable constant_">AUTHENTICATION_ERROR</span> = <span class="hljs-string">&#x27;AUTHENTICATION_ERROR&#x27;</span>,
+  <span class="hljs-variable constant_">AUTHORIZATION_ERROR</span> = <span class="hljs-string">&#x27;AUTHORIZATION_ERROR&#x27;</span>,
+  <span class="hljs-variable constant_">NOT_FOUND</span> = <span class="hljs-string">&#x27;NOT_FOUND&#x27;</span>,
+  <span class="hljs-variable constant_">CONFLICT</span> = <span class="hljs-string">&#x27;CONFLICT&#x27;</span>,
+  <span class="hljs-variable constant_">RATE_LIMIT_EXCEEDED</span> = <span class="hljs-string">&#x27;RATE_LIMIT_EXCEEDED&#x27;</span>,
+  <span class="hljs-variable constant_">INTERNAL_SERVER_ERROR</span> = <span class="hljs-string">&#x27;INTERNAL_SERVER_ERROR&#x27;</span>
+}
+
+<span class="hljs-keyword">class</span> <span class="hljs-title class_">APIError</span> <span class="hljs-keyword">extends</span> <span class="hljs-title class_ inherited__">Error</span> {
+  <span class="hljs-title function_">constructor</span>(<span class="hljs-params">
+    <span class="hljs-keyword">public</span> <span class="hljs-attr">code</span>: <span class="hljs-title class_">ErrorCodes</span>,
+    <span class="hljs-attr">message</span>: <span class="hljs-built_in">string</span>,
+    <span class="hljs-keyword">public</span> <span class="hljs-attr">statusCode</span>: <span class="hljs-built_in">number</span> = <span class="hljs-number">500</span>,
+    <span class="hljs-keyword">public</span> <span class="hljs-attr">details</span>?: <span class="hljs-built_in">any</span>
+  </span>) {
+    <span class="hljs-variable language_">super</span>(message);
+  }
+}</code></pre>
+                </div>
+            <h2>6. Security Implementation</h2>
+<h3>6.1 Authentication &amp; Authorization</h3>
+
+                <div class="code-block">
+                    <div class="code-header">
+                        <span class="language">typescript</span>
+                        <button class="copy-button" onclick="copyToClipboard(this)" title="Copy to clipboard">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <pre><code class="hljs language-typescript"><span class="hljs-comment">// JWT Token Structure</span>
+<span class="hljs-keyword">interface</span> <span class="hljs-title class_">JWTPayload</span> {
+  <span class="hljs-attr">userId</span>: <span class="hljs-built_in">string</span>;
+  <span class="hljs-attr">email</span>: <span class="hljs-built_in">string</span>;
+  <span class="hljs-attr">role</span>: <span class="hljs-string">&#x27;customer&#x27;</span> | <span class="hljs-string">&#x27;provider&#x27;</span> | <span class="hljs-string">&#x27;admin&#x27;</span>;
+  <span class="hljs-attr">iat</span>: <span class="hljs-built_in">number</span>;
+  <span class="hljs-attr">exp</span>: <span class="hljs-built_in">number</span>;
+}
+
+<span class="hljs-comment">// Password Hashing</span>
+<span class="hljs-keyword">import</span> bcrypt <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;bcryptjs&#x27;</span>;
+
+<span class="hljs-keyword">const</span> hashPassword = <span class="hljs-title function_">async</span> (<span class="hljs-attr">password</span>: <span class="hljs-built_in">string</span>): <span class="hljs-title class_">Promise</span>&lt;<span class="hljs-built_in">string</span>&gt; =&gt; {
+  <span class="hljs-keyword">const</span> saltRounds = <span class="hljs-number">12</span>;
+  <span class="hljs-keyword">return</span> <span class="hljs-keyword">await</span> bcrypt.<span class="hljs-title function_">hash</span>(password, saltRounds);
+};
+
+<span class="hljs-comment">// JWT Middleware</span>
+<span class="hljs-keyword">const</span> <span class="hljs-title function_">authenticateToken</span> = (<span class="hljs-params"><span class="hljs-attr">req</span>: <span class="hljs-title class_">Request</span>, <span class="hljs-attr">res</span>: <span class="hljs-title class_">Response</span>, <span class="hljs-attr">next</span>: <span class="hljs-title class_">NextFunction</span></span>) =&gt; {
+  <span class="hljs-keyword">const</span> authHeader = req.<span class="hljs-property">headers</span>[<span class="hljs-string">&#x27;authorization&#x27;</span>];
+  <span class="hljs-keyword">const</span> token = authHeader &amp;&amp; authHeader.<span class="hljs-title function_">split</span>(<span class="hljs-string">&#x27; &#x27;</span>)[<span class="hljs-number">1</span>];
+
+  <span class="hljs-keyword">if</span> (!token) {
+    <span class="hljs-keyword">return</span> res.<span class="hljs-title function_">status</span>(<span class="hljs-number">401</span>).<span class="hljs-title function_">json</span>({ <span class="hljs-attr">error</span>: <span class="hljs-string">&#x27;Access token required&#x27;</span> });
+  }
+
+  jwt.<span class="hljs-title function_">verify</span>(token, process.<span class="hljs-property">env</span>.<span class="hljs-property">JWT_SECRET</span>!, <span class="hljs-function">(<span class="hljs-params">err, user</span>) =&gt;</span> {
+    <span class="hljs-keyword">if</span> (err) <span class="hljs-keyword">return</span> res.<span class="hljs-title function_">status</span>(<span class="hljs-number">403</span>).<span class="hljs-title function_">json</span>({ <span class="hljs-attr">error</span>: <span class="hljs-string">&#x27;Invalid token&#x27;</span> });
+    req.<span class="hljs-property">user</span> = user <span class="hljs-keyword">as</span> <span class="hljs-title class_">JWTPayload</span>;
+    <span class="hljs-title function_">next</span>();
+  });
+};</code></pre>
+                </div>
+            <h3>6.2 Input Validation</h3>
+
+                <div class="code-block">
+                    <div class="code-header">
+                        <span class="language">typescript</span>
+                        <button class="copy-button" onclick="copyToClipboard(this)" title="Copy to clipboard">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <pre><code class="hljs language-typescript"><span class="hljs-keyword">import</span> { body, validationResult } <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;express-validator&#x27;</span>;
+
+<span class="hljs-keyword">const</span> validateRegistration = [
+  <span class="hljs-title function_">body</span>(<span class="hljs-string">&#x27;email&#x27;</span>).<span class="hljs-title function_">isEmail</span>().<span class="hljs-title function_">normalizeEmail</span>(),
+  <span class="hljs-title function_">body</span>(<span class="hljs-string">&#x27;password&#x27;</span>).<span class="hljs-title function_">isLength</span>({ <span class="hljs-attr">min</span>: <span class="hljs-number">8</span> }).<span class="hljs-title function_">matches</span>(<span class="hljs-regexp">/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/</span>),
+  <span class="hljs-title function_">body</span>(<span class="hljs-string">&#x27;firstName&#x27;</span>).<span class="hljs-title function_">trim</span>().<span class="hljs-title function_">isLength</span>({ <span class="hljs-attr">min</span>: <span class="hljs-number">2</span>, <span class="hljs-attr">max</span>: <span class="hljs-number">50</span> }),
+  <span class="hljs-title function_">body</span>(<span class="hljs-string">&#x27;lastName&#x27;</span>).<span class="hljs-title function_">trim</span>().<span class="hljs-title function_">isLength</span>({ <span class="hljs-attr">min</span>: <span class="hljs-number">2</span>, <span class="hljs-attr">max</span>: <span class="hljs-number">50</span> }),
+  <span class="hljs-title function_">body</span>(<span class="hljs-string">&#x27;phone&#x27;</span>).<span class="hljs-title function_">isMobilePhone</span>(<span class="hljs-string">&#x27;en-IN&#x27;</span>),
+  <span class="hljs-function">(<span class="hljs-params"><span class="hljs-attr">req</span>: <span class="hljs-title class_">Request</span>, <span class="hljs-attr">res</span>: <span class="hljs-title class_">Response</span>, <span class="hljs-attr">next</span>: <span class="hljs-title class_">NextFunction</span></span>) =&gt;</span> {
+    <span class="hljs-keyword">const</span> errors = <span class="hljs-title function_">validationResult</span>(req);
+    <span class="hljs-keyword">if</span> (!errors.<span class="hljs-title function_">isEmpty</span>()) {
+      <span class="hljs-keyword">return</span> res.<span class="hljs-title function_">status</span>(<span class="hljs-number">400</span>).<span class="hljs-title function_">json</span>({ <span class="hljs-attr">errors</span>: errors.<span class="hljs-title function_">array</span>() });
+    }
+    <span class="hljs-title function_">next</span>();
+  }
+];</code></pre>
+                </div>
+            <h3>6.3 Rate Limiting</h3>
+
+                <div class="code-block">
+                    <div class="code-header">
+                        <span class="language">typescript</span>
+                        <button class="copy-button" onclick="copyToClipboard(this)" title="Copy to clipboard">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <pre><code class="hljs language-typescript"><span class="hljs-keyword">import</span> rateLimit <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;express-rate-limit&#x27;</span>;
+
+<span class="hljs-keyword">const</span> authLimiter = <span class="hljs-title function_">rateLimit</span>({
+  <span class="hljs-attr">windowMs</span>: <span class="hljs-number">15</span> * <span class="hljs-number">60</span> * <span class="hljs-number">1000</span>, <span class="hljs-comment">// 15 minutes</span>
+  <span class="hljs-attr">max</span>: <span class="hljs-number">5</span>, <span class="hljs-comment">// limit each IP to 5 requests per windowMs</span>
+  <span class="hljs-attr">message</span>: <span class="hljs-string">&#x27;Too many authentication attempts, please try again later&#x27;</span>,
+  <span class="hljs-attr">standardHeaders</span>: <span class="hljs-literal">true</span>,
+  <span class="hljs-attr">legacyHeaders</span>: <span class="hljs-literal">false</span>,
+});
+
+<span class="hljs-keyword">const</span> apiLimiter = <span class="hljs-title function_">rateLimit</span>({
+  <span class="hljs-attr">windowMs</span>: <span class="hljs-number">15</span> * <span class="hljs-number">60</span> * <span class="hljs-number">1000</span>, <span class="hljs-comment">// 15 minutes</span>
+  <span class="hljs-attr">max</span>: <span class="hljs-number">100</span>, <span class="hljs-comment">// limit each IP to 100 requests per windowMs</span>
+  <span class="hljs-attr">message</span>: <span class="hljs-string">&#x27;Too many requests from this IP, please try again later&#x27;</span>,
+});</code></pre>
+                </div>
+            <h2>7. AI Integration Architecture</h2>
+<h3>7.1 Profile Generation Service</h3>
+
+                <div class="code-block">
+                    <div class="code-header">
+                        <span class="language">typescript</span>
+                        <button class="copy-button" onclick="copyToClipboard(this)" title="Copy to clipboard">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <pre><code class="hljs language-typescript"><span class="hljs-keyword">class</span> <span class="hljs-title class_">ProfileGenerationService</span> {
+  <span class="hljs-keyword">private</span> <span class="hljs-attr">openai</span>: <span class="hljs-title class_">OpenAI</span>;
+
+  <span class="hljs-title function_">constructor</span>(<span class="hljs-params"></span>) {
+    <span class="hljs-variable language_">this</span>.<span class="hljs-property">openai</span> = <span class="hljs-keyword">new</span> <span class="hljs-title class_">OpenAI</span>({
+      <span class="hljs-attr">apiKey</span>: process.<span class="hljs-property">env</span>.<span class="hljs-property">OPENAI_API_KEY</span>,
+    });
+  }
+
+  <span class="hljs-keyword">async</span> <span class="hljs-title function_">generateProfile</span>(<span class="hljs-attr">description</span>: <span class="hljs-built_in">string</span>, <span class="hljs-attr">language</span>: <span class="hljs-built_in">string</span> = <span class="hljs-string">&#x27;en&#x27;</span>): <span class="hljs-title class_">Promise</span>&lt;<span class="hljs-title class_">AIProfile</span>&gt; {
+    <span class="hljs-keyword">const</span> prompt = <span class="hljs-string">`
+    Generate a professional service provider profile from the following description:
+    
+    Description: <span class="hljs-subst">${description}</span>
+    Language: <span class="hljs-subst">${language}</span>
+    
+    Return a JSON object with the following structure:
+    {
+      &quot;summary&quot;: &quot;Professional summary in <span class="hljs-subst">${language}</span>&quot;,
+      &quot;skills&quot;: [&quot;skill1&quot;, &quot;skill2&quot;, &quot;skill3&quot;],
+      &quot;experience&quot;: &quot;Experience level description&quot;,
+      &quot;specialties&quot;: [&quot;specialty1&quot;, &quot;specialty2&quot;],
+      &quot;serviceAreas&quot;: [&quot;area1&quot;, &quot;area2&quot;],
+      &quot;pricing&quot;: {
+        &quot;basePrice&quot;: 500,
+        &quot;currency&quot;: &quot;INR&quot;,
+        &quot;unit&quot;: &quot;hour&quot;
+      }
+    }
+    `</span>;
+
+    <span class="hljs-keyword">const</span> response = <span class="hljs-keyword">await</span> <span class="hljs-variable language_">this</span>.<span class="hljs-property">openai</span>.<span class="hljs-property">chat</span>.<span class="hljs-property">completions</span>.<span class="hljs-title function_">create</span>({
+      <span class="hljs-attr">model</span>: <span class="hljs-string">&quot;gpt-4&quot;</span>,
+      <span class="hljs-attr">messages</span>: [{ <span class="hljs-attr">role</span>: <span class="hljs-string">&quot;user&quot;</span>, <span class="hljs-attr">content</span>: prompt }],
+      <span class="hljs-attr">temperature</span>: <span class="hljs-number">0.7</span>,
+      <span class="hljs-attr">max_tokens</span>: <span class="hljs-number">1000</span>,
+    });
+
+    <span class="hljs-keyword">return</span> <span class="hljs-title class_">JSON</span>.<span class="hljs-title function_">parse</span>(response.<span class="hljs-property">choices</span>[<span class="hljs-number">0</span>].<span class="hljs-property">message</span>.<span class="hljs-property">content</span>!);
+  }
+}</code></pre>
+                </div>
+            <h3>7.2 Smart Matching Algorithm</h3>
+
+                <div class="code-block">
+                    <div class="code-header">
+                        <span class="language">typescript</span>
+                        <button class="copy-button" onclick="copyToClipboard(this)" title="Copy to clipboard">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <pre><code class="hljs language-typescript"><span class="hljs-keyword">class</span> <span class="hljs-title class_">SmartMatchingService</span> {
+  <span class="hljs-keyword">async</span> <span class="hljs-title function_">findMatchingProviders</span>(
+    <span class="hljs-attr">customerLocation</span>: [<span class="hljs-built_in">number</span>, <span class="hljs-built_in">number</span>],
+    <span class="hljs-attr">serviceCategory</span>: <span class="hljs-built_in">string</span>,
+    <span class="hljs-attr">requirements</span>: <span class="hljs-built_in">string</span>,
+    <span class="hljs-attr">maxDistance</span>: <span class="hljs-built_in">number</span> = <span class="hljs-number">10</span>
+  ): <span class="hljs-title class_">Promise</span>&lt;<span class="hljs-title class_">ProviderMatch</span>[]&gt; {
+    <span class="hljs-comment">// 1. Find providers within distance</span>
+    <span class="hljs-keyword">const</span> nearbyProviders = <span class="hljs-keyword">await</span> <span class="hljs-variable language_">this</span>.<span class="hljs-title function_">findNearbyProviders</span>(
+      customerLocation,
+      maxDistance
+    );
+
+    <span class="hljs-comment">// 2. Filter by service category</span>
+    <span class="hljs-keyword">const</span> categoryMatches = nearbyProviders.<span class="hljs-title function_">filter</span>(
+      <span class="hljs-function"><span class="hljs-params">provider</span> =&gt;</span> provider.<span class="hljs-property">services</span>.<span class="hljs-title function_">some</span>(<span class="hljs-function"><span class="hljs-params">s</span> =&gt;</span> s.<span class="hljs-property">category</span> === serviceCategory)
+    );
+
+    <span class="hljs-comment">// 3. AI-powered requirement matching</span>
+    <span class="hljs-keyword">const</span> aiMatches = <span class="hljs-keyword">await</span> <span class="hljs-variable language_">this</span>.<span class="hljs-title function_">aiRequirementMatching</span>(
+      requirements,
+      categoryMatches
+    );
+
+    <span class="hljs-comment">// 4. Score and rank providers</span>
+    <span class="hljs-keyword">return</span> <span class="hljs-variable language_">this</span>.<span class="hljs-title function_">scoreAndRankProviders</span>(aiMatches, customerLocation);
+  }
+
+  <span class="hljs-keyword">private</span> <span class="hljs-keyword">async</span> <span class="hljs-title function_">aiRequirementMatching</span>(
+    <span class="hljs-attr">requirements</span>: <span class="hljs-built_in">string</span>,
+    <span class="hljs-attr">providers</span>: <span class="hljs-title class_">Provider</span>[]
+  ): <span class="hljs-title class_">Promise</span>&lt;<span class="hljs-title class_">ProviderMatch</span>[]&gt; {
+    <span class="hljs-comment">// Use OpenAI to match requirements with provider profiles</span>
+    <span class="hljs-keyword">const</span> prompt = <span class="hljs-string">`
+    Match the following customer requirements with provider profiles:
+    
+    Requirements: <span class="hljs-subst">${requirements}</span>
+    
+    Providers: <span class="hljs-subst">${<span class="hljs-built_in">JSON</span>.stringify(providers.map(p =&gt; ({
+      id: p._id,
+      description: p.description,
+      skills: p.aiGeneratedProfile.skills,
+      specialties: p.aiGeneratedProfile.specialties
+    })))}</span>
+    
+    Return a JSON array of matches with scores (0-100):
+    [{&quot;providerId&quot;: &quot;id&quot;, &quot;score&quot;: 85, &quot;reason&quot;: &quot;Matches plumbing expertise&quot;}]
+    `</span>;
+
+    <span class="hljs-comment">// Implementation details...</span>
+  }
+}</code></pre>
+                </div>
+            <h2>8. Real-time Communication</h2>
+<h3>8.1 Socket.io Implementation</h3>
+
+                <div class="code-block">
+                    <div class="code-header">
+                        <span class="language">typescript</span>
+                        <button class="copy-button" onclick="copyToClipboard(this)" title="Copy to clipboard">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <pre><code class="hljs language-typescript"><span class="hljs-comment">// Server-side Socket.io setup</span>
+<span class="hljs-keyword">import</span> { <span class="hljs-title class_">Server</span> } <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;socket.io&#x27;</span>;
+
+<span class="hljs-keyword">const</span> <span class="hljs-title function_">setupSocketHandlers</span> = (<span class="hljs-params"><span class="hljs-attr">io</span>: <span class="hljs-title class_">Server</span></span>) =&gt; {
+  io.<span class="hljs-title function_">on</span>(<span class="hljs-string">&#x27;connection&#x27;</span>, <span class="hljs-function">(<span class="hljs-params">socket</span>) =&gt;</span> {
+    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&#x27;User connected:&#x27;</span>, socket.<span class="hljs-property">id</span>);
+
+    <span class="hljs-comment">// Join booking room</span>
+    socket.<span class="hljs-title function_">on</span>(<span class="hljs-string">&#x27;join-booking&#x27;</span>, <span class="hljs-function">(<span class="hljs-params"><span class="hljs-attr">bookingId</span>: <span class="hljs-built_in">string</span></span>) =&gt;</span> {
+      socket.<span class="hljs-title function_">join</span>(<span class="hljs-string">`booking-<span class="hljs-subst">${bookingId}</span>`</span>);
+    });
+
+    <span class="hljs-comment">// Handle messages</span>
+    socket.<span class="hljs-title function_">on</span>(<span class="hljs-string">&#x27;send-message&#x27;</span>, <span class="hljs-title function_">async</span> (<span class="hljs-attr">data</span>: <span class="hljs-title class_">MessageData</span>) =&gt; {
+      <span class="hljs-keyword">try</span> {
+        <span class="hljs-keyword">const</span> message = <span class="hljs-keyword">await</span> <span class="hljs-title class_">Message</span>.<span class="hljs-title function_">create</span>(data);
+        
+        <span class="hljs-comment">// Emit to booking room</span>
+        io.<span class="hljs-title function_">to</span>(<span class="hljs-string">`booking-<span class="hljs-subst">${data.bookingId}</span>`</span>).<span class="hljs-title function_">emit</span>(<span class="hljs-string">&#x27;new-message&#x27;</span>, message);
+        
+        <span class="hljs-comment">// Emit to specific user</span>
+        socket.<span class="hljs-title function_">to</span>(data.<span class="hljs-property">receiverId</span>).<span class="hljs-title function_">emit</span>(<span class="hljs-string">&#x27;message-notification&#x27;</span>, {
+          <span class="hljs-attr">bookingId</span>: data.<span class="hljs-property">bookingId</span>,
+          <span class="hljs-attr">senderId</span>: data.<span class="hljs-property">senderId</span>,
+          <span class="hljs-attr">preview</span>: data.<span class="hljs-property">content</span>.<span class="hljs-title function_">substring</span>(<span class="hljs-number">0</span>, <span class="hljs-number">50</span>)
+        });
+      } <span class="hljs-keyword">catch</span> (error) {
+        socket.<span class="hljs-title function_">emit</span>(<span class="hljs-string">&#x27;message-error&#x27;</span>, { <span class="hljs-attr">error</span>: <span class="hljs-string">&#x27;Failed to send message&#x27;</span> });
+      }
+    });
+
+    <span class="hljs-comment">// Handle booking updates</span>
+    socket.<span class="hljs-title function_">on</span>(<span class="hljs-string">&#x27;booking-update&#x27;</span>, <span class="hljs-function">(<span class="hljs-params"><span class="hljs-attr">bookingId</span>: <span class="hljs-built_in">string</span>, <span class="hljs-attr">status</span>: <span class="hljs-built_in">string</span></span>) =&gt;</span> {
+      io.<span class="hljs-title function_">to</span>(<span class="hljs-string">`booking-<span class="hljs-subst">${bookingId}</span>`</span>).<span class="hljs-title function_">emit</span>(<span class="hljs-string">&#x27;booking-status-changed&#x27;</span>, {
+        bookingId,
+        status,
+        <span class="hljs-attr">timestamp</span>: <span class="hljs-keyword">new</span> <span class="hljs-title class_">Date</span>()
+      });
+    });
+
+    socket.<span class="hljs-title function_">on</span>(<span class="hljs-string">&#x27;disconnect&#x27;</span>, <span class="hljs-function">() =&gt;</span> {
+      <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&#x27;User disconnected:&#x27;</span>, socket.<span class="hljs-property">id</span>);
+    });
+  });
+};</code></pre>
+                </div>
+            <h3>8.2 Client-side Socket Integration</h3>
+
+                <div class="code-block">
+                    <div class="code-header">
+                        <span class="language">typescript</span>
+                        <button class="copy-button" onclick="copyToClipboard(this)" title="Copy to clipboard">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <pre><code class="hljs language-typescript"><span class="hljs-comment">// React hook for Socket.io</span>
+<span class="hljs-keyword">import</span> { useEffect, useState } <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;react&#x27;</span>;
+<span class="hljs-keyword">import</span> { io, <span class="hljs-title class_">Socket</span> } <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;socket.io-client&#x27;</span>;
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">const</span> <span class="hljs-title function_">useSocket</span> = (<span class="hljs-params"><span class="hljs-attr">bookingId</span>?: <span class="hljs-built_in">string</span></span>) =&gt; {
+  <span class="hljs-keyword">const</span> [socket, setSocket] = useState&lt;<span class="hljs-title class_">Socket</span> | <span class="hljs-literal">null</span>&gt;(<span class="hljs-literal">null</span>);
+  <span class="hljs-keyword">const</span> [messages, setMessages] = useState&lt;<span class="hljs-title class_">Message</span>[]&gt;([]);
+
+  <span class="hljs-title function_">useEffect</span>(<span class="hljs-function">() =&gt;</span> {
+    <span class="hljs-keyword">const</span> newSocket = <span class="hljs-title function_">io</span>(process.<span class="hljs-property">env</span>.<span class="hljs-property">REACT_APP_SOCKET_URL</span>!);
+    <span class="hljs-title function_">setSocket</span>(newSocket);
+
+    <span class="hljs-keyword">if</span> (bookingId) {
+      newSocket.<span class="hljs-title function_">emit</span>(<span class="hljs-string">&#x27;join-booking&#x27;</span>, bookingId);
+    }
+
+    newSocket.<span class="hljs-title function_">on</span>(<span class="hljs-string">&#x27;new-message&#x27;</span>, <span class="hljs-function">(<span class="hljs-params"><span class="hljs-attr">message</span>: <span class="hljs-title class_">Message</span></span>) =&gt;</span> {
+      <span class="hljs-title function_">setMessages</span>(<span class="hljs-function"><span class="hljs-params">prev</span> =&gt;</span> [...prev, message]);
+    });
+
+    newSocket.<span class="hljs-title function_">on</span>(<span class="hljs-string">&#x27;booking-status-changed&#x27;</span>, <span class="hljs-function">(<span class="hljs-params">data</span>) =&gt;</span> {
+      <span class="hljs-comment">// Handle booking status updates</span>
+      <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&#x27;Booking status changed:&#x27;</span>, data);
+    });
+
+    <span class="hljs-keyword">return</span> <span class="hljs-function">() =&gt;</span> {
+      newSocket.<span class="hljs-title function_">close</span>();
+    };
+  }, [bookingId]);
+
+  <span class="hljs-keyword">const</span> <span class="hljs-title function_">sendMessage</span> = (<span class="hljs-params"><span class="hljs-attr">content</span>: <span class="hljs-built_in">string</span>, <span class="hljs-attr">receiverId</span>: <span class="hljs-built_in">string</span></span>) =&gt; {
+    <span class="hljs-keyword">if</span> (socket &amp;&amp; bookingId) {
+      socket.<span class="hljs-title function_">emit</span>(<span class="hljs-string">&#x27;send-message&#x27;</span>, {
+        bookingId,
+        content,
+        receiverId,
+        <span class="hljs-attr">senderId</span>: <span class="hljs-title function_">getCurrentUserId</span>()
+      });
+    }
+  };
+
+  <span class="hljs-keyword">return</span> { socket, messages, sendMessage };
+};</code></pre>
+                </div>
+            <h2>9. Performance Optimization</h2>
+<h3>9.1 Caching Strategy</h3>
+
+                <div class="code-block">
+                    <div class="code-header">
+                        <span class="language">typescript</span>
+                        <button class="copy-button" onclick="copyToClipboard(this)" title="Copy to clipboard">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <pre><code class="hljs language-typescript"><span class="hljs-keyword">import</span> <span class="hljs-title class_">Redis</span> <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;ioredis&#x27;</span>;
+
+<span class="hljs-keyword">class</span> <span class="hljs-title class_">CacheService</span> {
+  <span class="hljs-keyword">private</span> <span class="hljs-attr">redis</span>: <span class="hljs-title class_">Redis</span>;
+
+  <span class="hljs-title function_">constructor</span>(<span class="hljs-params"></span>) {
+    <span class="hljs-variable language_">this</span>.<span class="hljs-property">redis</span> = <span class="hljs-keyword">new</span> <span class="hljs-title class_">Redis</span>(process.<span class="hljs-property">env</span>.<span class="hljs-property">REDIS_URL</span>!);
+  }
+
+  <span class="hljs-keyword">async</span> get&lt;T&gt;(<span class="hljs-attr">key</span>: <span class="hljs-built_in">string</span>): <span class="hljs-title class_">Promise</span>&lt;T | <span class="hljs-literal">null</span>&gt; {
+    <span class="hljs-keyword">const</span> cached = <span class="hljs-keyword">await</span> <span class="hljs-variable language_">this</span>.<span class="hljs-property">redis</span>.<span class="hljs-title function_">get</span>(key);
+    <span class="hljs-keyword">return</span> cached ? <span class="hljs-title class_">JSON</span>.<span class="hljs-title function_">parse</span>(cached) : <span class="hljs-literal">null</span>;
+  }
+
+  <span class="hljs-keyword">async</span> <span class="hljs-title function_">set</span>(<span class="hljs-attr">key</span>: <span class="hljs-built_in">string</span>, <span class="hljs-attr">value</span>: <span class="hljs-built_in">any</span>, <span class="hljs-attr">ttl</span>: <span class="hljs-built_in">number</span> = <span class="hljs-number">3600</span>): <span class="hljs-title class_">Promise</span>&lt;<span class="hljs-built_in">void</span>&gt; {
+    <span class="hljs-keyword">await</span> <span class="hljs-variable language_">this</span>.<span class="hljs-property">redis</span>.<span class="hljs-title function_">setex</span>(key, ttl, <span class="hljs-title class_">JSON</span>.<span class="hljs-title function_">stringify</span>(value));
+  }
+
+  <span class="hljs-keyword">async</span> <span class="hljs-title function_">invalidate</span>(<span class="hljs-attr">pattern</span>: <span class="hljs-built_in">string</span>): <span class="hljs-title class_">Promise</span>&lt;<span class="hljs-built_in">void</span>&gt; {
+    <span class="hljs-keyword">const</span> keys = <span class="hljs-keyword">await</span> <span class="hljs-variable language_">this</span>.<span class="hljs-property">redis</span>.<span class="hljs-title function_">keys</span>(pattern);
+    <span class="hljs-keyword">if</span> (keys.<span class="hljs-property">length</span> &gt; <span class="hljs-number">0</span>) {
+      <span class="hljs-keyword">await</span> <span class="hljs-variable language_">this</span>.<span class="hljs-property">redis</span>.<span class="hljs-title function_">del</span>(...keys);
+    }
+  }
+}
+
+<span class="hljs-comment">// Usage in API endpoints</span>
+<span class="hljs-keyword">const</span> <span class="hljs-title function_">getProviders</span> = <span class="hljs-keyword">async</span> (<span class="hljs-params"><span class="hljs-attr">req</span>: <span class="hljs-title class_">Request</span>, <span class="hljs-attr">res</span>: <span class="hljs-title class_">Response</span></span>) =&gt; {
+  <span class="hljs-keyword">const</span> cacheKey = <span class="hljs-string">`providers:<span class="hljs-subst">${req.query.city}</span>:<span class="hljs-subst">${req.query.category}</span>`</span>;
+  
+  <span class="hljs-keyword">let</span> providers = <span class="hljs-keyword">await</span> cacheService.<span class="hljs-property">get</span>&lt;<span class="hljs-title class_">Provider</span>[]&gt;(cacheKey);
+  
+  <span class="hljs-keyword">if</span> (!providers) {
+    providers = <span class="hljs-keyword">await</span> <span class="hljs-title class_">Provider</span>.<span class="hljs-title function_">find</span>(query).<span class="hljs-title function_">lean</span>();
+    <span class="hljs-keyword">await</span> cacheService.<span class="hljs-title function_">set</span>(cacheKey, providers, <span class="hljs-number">1800</span>); <span class="hljs-comment">// 30 minutes</span>
+  }
+  
+  res.<span class="hljs-title function_">json</span>(providers);
+};</code></pre>
+                </div>
+            <h3>9.2 Database Query Optimization</h3>
+
+                <div class="code-block">
+                    <div class="code-header">
+                        <span class="language">typescript</span>
+                        <button class="copy-button" onclick="copyToClipboard(this)" title="Copy to clipboard">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <pre><code class="hljs language-typescript"><span class="hljs-comment">// Optimized provider search with aggregation</span>
+<span class="hljs-keyword">const</span> <span class="hljs-title function_">searchProviders</span> = <span class="hljs-keyword">async</span> (<span class="hljs-params"><span class="hljs-attr">filters</span>: <span class="hljs-title class_">SearchFilters</span></span>) =&gt; {
+  <span class="hljs-keyword">const</span> pipeline = [
+    <span class="hljs-comment">// Match stage</span>
+    {
+      <span class="hljs-attr">$match</span>: {
+        <span class="hljs-attr">isActive</span>: <span class="hljs-literal">true</span>,
+        <span class="hljs-attr">isVerified</span>: <span class="hljs-literal">true</span>,
+        <span class="hljs-string">&#x27;serviceAreas.city&#x27;</span>: filters.<span class="hljs-property">city</span>,
+        <span class="hljs-string">&#x27;services.category&#x27;</span>: filters.<span class="hljs-property">category</span>
+      }
+    },
+    <span class="hljs-comment">// GeoNear stage for location-based search</span>
+    {
+      <span class="hljs-attr">$geoNear</span>: {
+        <span class="hljs-attr">near</span>: {
+          <span class="hljs-attr">type</span>: <span class="hljs-string">&#x27;Point&#x27;</span>,
+          <span class="hljs-attr">coordinates</span>: filters.<span class="hljs-property">coordinates</span>
+        },
+        <span class="hljs-attr">distanceField</span>: <span class="hljs-string">&#x27;distance&#x27;</span>,
+        <span class="hljs-attr">maxDistance</span>: filters.<span class="hljs-property">maxDistance</span> * <span class="hljs-number">1000</span>, <span class="hljs-comment">// Convert km to meters</span>
+        <span class="hljs-attr">spherical</span>: <span class="hljs-literal">true</span>
+      }
+    },
+    <span class="hljs-comment">// Lookup for recent reviews</span>
+    {
+      <span class="hljs-attr">$lookup</span>: {
+        <span class="hljs-attr">from</span>: <span class="hljs-string">&#x27;reviews&#x27;</span>,
+        <span class="hljs-attr">localField</span>: <span class="hljs-string">&#x27;_id&#x27;</span>,
+        <span class="hljs-attr">foreignField</span>: <span class="hljs-string">&#x27;providerId&#x27;</span>,
+        <span class="hljs-attr">as</span>: <span class="hljs-string">&#x27;recentReviews&#x27;</span>,
+        <span class="hljs-attr">pipeline</span>: [
+          { <span class="hljs-attr">$sort</span>: { <span class="hljs-attr">createdAt</span>: -<span class="hljs-number">1</span> } },
+          { <span class="hljs-attr">$limit</span>: <span class="hljs-number">5</span> }
+        ]
+      }
+    },
+    <span class="hljs-comment">// Add computed fields</span>
+    {
+      <span class="hljs-attr">$addFields</span>: {
+        <span class="hljs-attr">averageRating</span>: { <span class="hljs-attr">$avg</span>: <span class="hljs-string">&#x27;$recentReviews.rating&#x27;</span> },
+        <span class="hljs-attr">reviewCount</span>: { <span class="hljs-attr">$size</span>: <span class="hljs-string">&#x27;$recentReviews&#x27;</span> }
+      }
+    },
+    <span class="hljs-comment">// Sort by distance and rating</span>
+    {
+      <span class="hljs-attr">$sort</span>: {
+        <span class="hljs-attr">distance</span>: <span class="hljs-number">1</span>,
+        <span class="hljs-attr">averageRating</span>: -<span class="hljs-number">1</span>
+      }
+    },
+    <span class="hljs-comment">// Limit results</span>
+    { <span class="hljs-attr">$limit</span>: filters.<span class="hljs-property">limit</span> || <span class="hljs-number">20</span> }
+  ];
+
+  <span class="hljs-keyword">return</span> <span class="hljs-keyword">await</span> <span class="hljs-title class_">Provider</span>.<span class="hljs-title function_">aggregate</span>(pipeline);
+};</code></pre>
+                </div>
+            <h2>10. Monitoring &amp; Logging</h2>
+<h3>10.1 Application Logging</h3>
+
+                <div class="code-block">
+                    <div class="code-header">
+                        <span class="language">typescript</span>
+                        <button class="copy-button" onclick="copyToClipboard(this)" title="Copy to clipboard">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <pre><code class="hljs language-typescript"><span class="hljs-keyword">import</span> winston <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;winston&#x27;</span>;
+
+<span class="hljs-keyword">const</span> logger = winston.<span class="hljs-title function_">createLogger</span>({
+  <span class="hljs-attr">level</span>: <span class="hljs-string">&#x27;info&#x27;</span>,
+  <span class="hljs-attr">format</span>: winston.<span class="hljs-property">format</span>.<span class="hljs-title function_">combine</span>(
+    winston.<span class="hljs-property">format</span>.<span class="hljs-title function_">timestamp</span>(),
+    winston.<span class="hljs-property">format</span>.<span class="hljs-title function_">errors</span>({ <span class="hljs-attr">stack</span>: <span class="hljs-literal">true</span> }),
+    winston.<span class="hljs-property">format</span>.<span class="hljs-title function_">json</span>()
+  ),
+  <span class="hljs-attr">transports</span>: [
+    <span class="hljs-keyword">new</span> winston.<span class="hljs-property">transports</span>.<span class="hljs-title class_">File</span>({ <span class="hljs-attr">filename</span>: <span class="hljs-string">&#x27;logs/error.log&#x27;</span>, <span class="hljs-attr">level</span>: <span class="hljs-string">&#x27;error&#x27;</span> }),
+    <span class="hljs-keyword">new</span> winston.<span class="hljs-property">transports</span>.<span class="hljs-title class_">File</span>({ <span class="hljs-attr">filename</span>: <span class="hljs-string">&#x27;logs/combined.log&#x27;</span> }),
+    <span class="hljs-keyword">new</span> winston.<span class="hljs-property">transports</span>.<span class="hljs-title class_">Console</span>({
+      <span class="hljs-attr">format</span>: winston.<span class="hljs-property">format</span>.<span class="hljs-title function_">simple</span>()
+    })
+  ]
+});
+
+<span class="hljs-comment">// Usage in controllers</span>
+<span class="hljs-keyword">const</span> <span class="hljs-title function_">createBooking</span> = <span class="hljs-keyword">async</span> (<span class="hljs-params"><span class="hljs-attr">req</span>: <span class="hljs-title class_">Request</span>, <span class="hljs-attr">res</span>: <span class="hljs-title class_">Response</span></span>) =&gt; {
+  <span class="hljs-keyword">try</span> {
+    <span class="hljs-keyword">const</span> booking = <span class="hljs-keyword">await</span> <span class="hljs-title class_">Booking</span>.<span class="hljs-title function_">create</span>(req.<span class="hljs-property">body</span>);
+    logger.<span class="hljs-title function_">info</span>(<span class="hljs-string">&#x27;Booking created&#x27;</span>, { <span class="hljs-attr">bookingId</span>: booking.<span class="hljs-property">_id</span>, <span class="hljs-attr">customerId</span>: req.<span class="hljs-property">user</span>.<span class="hljs-property">userId</span> });
+    res.<span class="hljs-title function_">json</span>(booking);
+  } <span class="hljs-keyword">catch</span> (error) {
+    logger.<span class="hljs-title function_">error</span>(<span class="hljs-string">&#x27;Failed to create booking&#x27;</span>, { <span class="hljs-attr">error</span>: error.<span class="hljs-property">message</span>, <span class="hljs-attr">customerId</span>: req.<span class="hljs-property">user</span>.<span class="hljs-property">userId</span> });
+    res.<span class="hljs-title function_">status</span>(<span class="hljs-number">500</span>).<span class="hljs-title function_">json</span>({ <span class="hljs-attr">error</span>: <span class="hljs-string">&#x27;Failed to create booking&#x27;</span> });
+  }
+};</code></pre>
+                </div>
+            <h3>10.2 Health Checks</h3>
+
+                <div class="code-block">
+                    <div class="code-header">
+                        <span class="language">typescript</span>
+                        <button class="copy-button" onclick="copyToClipboard(this)" title="Copy to clipboard">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <pre><code class="hljs language-typescript"><span class="hljs-keyword">const</span> <span class="hljs-title function_">healthCheck</span> = <span class="hljs-keyword">async</span> (<span class="hljs-params"><span class="hljs-attr">req</span>: <span class="hljs-title class_">Request</span>, <span class="hljs-attr">res</span>: <span class="hljs-title class_">Response</span></span>) =&gt; {
+  <span class="hljs-keyword">const</span> checks = {
+    <span class="hljs-attr">database</span>: <span class="hljs-keyword">await</span> <span class="hljs-title function_">checkDatabase</span>(),
+    <span class="hljs-attr">redis</span>: <span class="hljs-keyword">await</span> <span class="hljs-title function_">checkRedis</span>(),
+    <span class="hljs-attr">openai</span>: <span class="hljs-keyword">await</span> <span class="hljs-title function_">checkOpenAI</span>(),
+    <span class="hljs-attr">timestamp</span>: <span class="hljs-keyword">new</span> <span class="hljs-title class_">Date</span>().<span class="hljs-title function_">toISOString</span>()
+  };
+
+  <span class="hljs-keyword">const</span> isHealthy = <span class="hljs-title class_">Object</span>.<span class="hljs-title function_">values</span>(checks).<span class="hljs-title function_">every</span>(<span class="hljs-function"><span class="hljs-params">check</span> =&gt;</span> check.<span class="hljs-property">status</span> === <span class="hljs-string">&#x27;healthy&#x27;</span>);
+  
+  res.<span class="hljs-title function_">status</span>(isHealthy ? <span class="hljs-number">200</span> : <span class="hljs-number">503</span>).<span class="hljs-title function_">json</span>(checks);
+};
+
+<span class="hljs-keyword">const</span> <span class="hljs-title function_">checkDatabase</span> = <span class="hljs-keyword">async</span> (<span class="hljs-params"></span>) =&gt; {
+  <span class="hljs-keyword">try</span> {
+    <span class="hljs-keyword">await</span> mongoose.<span class="hljs-property">connection</span>.<span class="hljs-property">db</span>.<span class="hljs-title function_">admin</span>().<span class="hljs-title function_">ping</span>();
+    <span class="hljs-keyword">return</span> { <span class="hljs-attr">status</span>: <span class="hljs-string">&#x27;healthy&#x27;</span>, <span class="hljs-attr">responseTime</span>: <span class="hljs-title class_">Date</span>.<span class="hljs-title function_">now</span>() };
+  } <span class="hljs-keyword">catch</span> (error) {
+    <span class="hljs-keyword">return</span> { <span class="hljs-attr">status</span>: <span class="hljs-string">&#x27;unhealthy&#x27;</span>, <span class="hljs-attr">error</span>: error.<span class="hljs-property">message</span> };
+  }
+};</code></pre>
+                </div>
+            <h2>11. Deployment Strategy</h2>
+<h3>11.1 Docker Configuration</h3>
+
+                <div class="code-block">
+                    <div class="code-header">
+                        <span class="language">dockerfile</span>
+                        <button class="copy-button" onclick="copyToClipboard(this)" title="Copy to clipboard">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <pre><code class="hljs language-dockerfile"><span class="hljs-comment"># Dockerfile for API service</span>
+<span class="hljs-keyword">FROM</span> node:<span class="hljs-number">20</span>-alpine
+
+<span class="hljs-keyword">WORKDIR</span><span class="language-bash"> /app</span>
+
+<span class="hljs-keyword">COPY</span><span class="language-bash"> package*.json ./</span>
+<span class="hljs-keyword">RUN</span><span class="language-bash"> npm ci --only=production</span>
+
+<span class="hljs-keyword">COPY</span><span class="language-bash"> . .</span>
+<span class="hljs-keyword">RUN</span><span class="language-bash"> npm run build</span>
+
+<span class="hljs-keyword">EXPOSE</span> <span class="hljs-number">3000</span>
+
+<span class="hljs-keyword">CMD</span><span class="language-bash"> [<span class="hljs-string">&quot;npm&quot;</span>, <span class="hljs-string">&quot;start&quot;</span>]</span></code></pre>
+                </div>
+            
+                <div class="code-block">
+                    <div class="code-header">
+                        <span class="language">yaml</span>
+                        <button class="copy-button" onclick="copyToClipboard(this)" title="Copy to clipboard">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <pre><code class="hljs language-yaml"><span class="hljs-comment"># docker-compose.yml</span>
+<span class="hljs-attr">version:</span> <span class="hljs-string">&#x27;3.8&#x27;</span>
+
+<span class="hljs-attr">services:</span>
+  <span class="hljs-attr">api:</span>
+    <span class="hljs-attr">build:</span> <span class="hljs-string">./server</span>
+    <span class="hljs-attr">ports:</span>
+      <span class="hljs-bullet">-</span> <span class="hljs-string">&quot;3000:3000&quot;</span>
+    <span class="hljs-attr">environment:</span>
+      <span class="hljs-bullet">-</span> <span class="hljs-string">NODE_ENV=production</span>
+      <span class="hljs-bullet">-</span> <span class="hljs-string">MONGODB_URI=mongodb://mongo:27017/localkart</span>
+      <span class="hljs-bullet">-</span> <span class="hljs-string">REDIS_URL=redis://redis:6379</span>
+    <span class="hljs-attr">depends_on:</span>
+      <span class="hljs-bullet">-</span> <span class="hljs-string">mongo</span>
+      <span class="hljs-bullet">-</span> <span class="hljs-string">redis</span>
+
+  <span class="hljs-attr">client:</span>
+    <span class="hljs-attr">build:</span> <span class="hljs-string">./client</span>
+    <span class="hljs-attr">ports:</span>
+      <span class="hljs-bullet">-</span> <span class="hljs-string">&quot;80:80&quot;</span>
+    <span class="hljs-attr">depends_on:</span>
+      <span class="hljs-bullet">-</span> <span class="hljs-string">api</span>
+
+  <span class="hljs-attr">mongo:</span>
+    <span class="hljs-attr">image:</span> <span class="hljs-string">mongo:7</span>
+    <span class="hljs-attr">volumes:</span>
+      <span class="hljs-bullet">-</span> <span class="hljs-string">mongo_data:/data/db</span>
+    <span class="hljs-attr">ports:</span>
+      <span class="hljs-bullet">-</span> <span class="hljs-string">&quot;27017:27017&quot;</span>
+
+  <span class="hljs-attr">redis:</span>
+    <span class="hljs-attr">image:</span> <span class="hljs-string">redis:7-alpine</span>
+    <span class="hljs-attr">ports:</span>
+      <span class="hljs-bullet">-</span> <span class="hljs-string">&quot;6379:6379&quot;</span>
+
+<span class="hljs-attr">volumes:</span>
+  <span class="hljs-attr">mongo_data:</span></code></pre>
+                </div>
+            <h3>11.2 Kubernetes Deployment</h3>
+
+                <div class="code-block">
+                    <div class="code-header">
+                        <span class="language">yaml</span>
+                        <button class="copy-button" onclick="copyToClipboard(this)" title="Copy to clipboard">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <pre><code class="hljs language-yaml"><span class="hljs-comment"># k8s-deployment.yaml</span>
+<span class="hljs-attr">apiVersion:</span> <span class="hljs-string">apps/v1</span>
+<span class="hljs-attr">kind:</span> <span class="hljs-string">Deployment</span>
+<span class="hljs-attr">metadata:</span>
+  <span class="hljs-attr">name:</span> <span class="hljs-string">localkart-api</span>
+<span class="hljs-attr">spec:</span>
+  <span class="hljs-attr">replicas:</span> <span class="hljs-number">3</span>
+  <span class="hljs-attr">selector:</span>
+    <span class="hljs-attr">matchLabels:</span>
+      <span class="hljs-attr">app:</span> <span class="hljs-string">localkart-api</span>
+  <span class="hljs-attr">template:</span>
+    <span class="hljs-attr">metadata:</span>
+      <span class="hljs-attr">labels:</span>
+        <span class="hljs-attr">app:</span> <span class="hljs-string">localkart-api</span>
+    <span class="hljs-attr">spec:</span>
+      <span class="hljs-attr">containers:</span>
+      <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">api</span>
+        <span class="hljs-attr">image:</span> <span class="hljs-string">localkart/api:latest</span>
+        <span class="hljs-attr">ports:</span>
+        <span class="hljs-bullet">-</span> <span class="hljs-attr">containerPort:</span> <span class="hljs-number">3000</span>
+        <span class="hljs-attr">env:</span>
+        <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">NODE_ENV</span>
+          <span class="hljs-attr">value:</span> <span class="hljs-string">&quot;production&quot;</span>
+        <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">MONGODB_URI</span>
+          <span class="hljs-attr">valueFrom:</span>
+            <span class="hljs-attr">secretKeyRef:</span>
+              <span class="hljs-attr">name:</span> <span class="hljs-string">localkart-secrets</span>
+              <span class="hljs-attr">key:</span> <span class="hljs-string">mongodb-uri</span>
+        <span class="hljs-attr">resources:</span>
+          <span class="hljs-attr">requests:</span>
+            <span class="hljs-attr">memory:</span> <span class="hljs-string">&quot;256Mi&quot;</span>
+            <span class="hljs-attr">cpu:</span> <span class="hljs-string">&quot;250m&quot;</span>
+          <span class="hljs-attr">limits:</span>
+            <span class="hljs-attr">memory:</span> <span class="hljs-string">&quot;512Mi&quot;</span>
+            <span class="hljs-attr">cpu:</span> <span class="hljs-string">&quot;500m&quot;</span></code></pre>
+                </div>
+            <h2>12. Testing Strategy</h2>
+<h3>12.1 Unit Testing</h3>
+
+                <div class="code-block">
+                    <div class="code-header">
+                        <span class="language">typescript</span>
+                        <button class="copy-button" onclick="copyToClipboard(this)" title="Copy to clipboard">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <pre><code class="hljs language-typescript"><span class="hljs-comment">// Example unit test for ProfileGenerationService</span>
+<span class="hljs-keyword">import</span> { <span class="hljs-title class_">ProfileGenerationService</span> } <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;../services/ProfileGenerationService&#x27;</span>;
+
+<span class="hljs-title function_">describe</span>(<span class="hljs-string">&#x27;ProfileGenerationService&#x27;</span>, <span class="hljs-function">() =&gt;</span> {
+  <span class="hljs-keyword">let</span> <span class="hljs-attr">service</span>: <span class="hljs-title class_">ProfileGenerationService</span>;
+
+  <span class="hljs-title function_">beforeEach</span>(<span class="hljs-function">() =&gt;</span> {
+    service = <span class="hljs-keyword">new</span> <span class="hljs-title class_">ProfileGenerationService</span>();
+  });
+
+  <span class="hljs-title function_">it</span>(<span class="hljs-string">&#x27;should generate profile from description&#x27;</span>, <span class="hljs-title function_">async</span> () =&gt; {
+    <span class="hljs-keyword">const</span> description = <span class="hljs-string">&#x27;I am a plumber with 10 years experience&#x27;</span>;
+    <span class="hljs-keyword">const</span> profile = <span class="hljs-keyword">await</span> service.<span class="hljs-title function_">generateProfile</span>(description);
+    
+    <span class="hljs-title function_">expect</span>(profile).<span class="hljs-title function_">toHaveProperty</span>(<span class="hljs-string">&#x27;summary&#x27;</span>);
+    <span class="hljs-title function_">expect</span>(profile).<span class="hljs-title function_">toHaveProperty</span>(<span class="hljs-string">&#x27;skills&#x27;</span>);
+    <span class="hljs-title function_">expect</span>(profile.<span class="hljs-property">skills</span>).<span class="hljs-title function_">toContain</span>(<span class="hljs-string">&#x27;plumbing&#x27;</span>);
+    <span class="hljs-title function_">expect</span>(profile.<span class="hljs-property">experience</span>).<span class="hljs-title function_">toContain</span>(<span class="hljs-string">&#x27;10 years&#x27;</span>);
+  });
+});</code></pre>
+                </div>
+            <h3>12.2 Integration Testing</h3>
+
+                <div class="code-block">
+                    <div class="code-header">
+                        <span class="language">typescript</span>
+                        <button class="copy-button" onclick="copyToClipboard(this)" title="Copy to clipboard">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <pre><code class="hljs language-typescript"><span class="hljs-comment">// Example integration test for booking API</span>
+<span class="hljs-keyword">import</span> request <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;supertest&#x27;</span>;
+<span class="hljs-keyword">import</span> app <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;../app&#x27;</span>;
+
+<span class="hljs-title function_">describe</span>(<span class="hljs-string">&#x27;Booking API&#x27;</span>, <span class="hljs-function">() =&gt;</span> {
+  <span class="hljs-keyword">let</span> <span class="hljs-attr">authToken</span>: <span class="hljs-built_in">string</span>;
+  <span class="hljs-keyword">let</span> <span class="hljs-attr">customerId</span>: <span class="hljs-built_in">string</span>;
+  <span class="hljs-keyword">let</span> <span class="hljs-attr">providerId</span>: <span class="hljs-built_in">string</span>;
+
+  <span class="hljs-title function_">beforeAll</span>(<span class="hljs-title function_">async</span> () =&gt; {
+    <span class="hljs-comment">// Setup test data</span>
+    <span class="hljs-keyword">const</span> customer = <span class="hljs-keyword">await</span> <span class="hljs-title function_">createTestCustomer</span>();
+    <span class="hljs-keyword">const</span> provider = <span class="hljs-keyword">await</span> <span class="hljs-title function_">createTestProvider</span>();
+    authToken = <span class="hljs-keyword">await</span> <span class="hljs-title function_">getAuthToken</span>(customer);
+    customerId = customer.<span class="hljs-property">_id</span>;
+    providerId = provider.<span class="hljs-property">_id</span>;
+  });
+
+  <span class="hljs-title function_">it</span>(<span class="hljs-string">&#x27;should create a booking&#x27;</span>, <span class="hljs-title function_">async</span> () =&gt; {
+    <span class="hljs-keyword">const</span> bookingData = {
+      providerId,
+      <span class="hljs-attr">service</span>: {
+        <span class="hljs-attr">category</span>: <span class="hljs-string">&#x27;plumbing&#x27;</span>,
+        <span class="hljs-attr">description</span>: <span class="hljs-string">&#x27;Fix leaky faucet&#x27;</span>
+      },
+      <span class="hljs-attr">location</span>: {
+        <span class="hljs-attr">address</span>: <span class="hljs-string">&#x27;123 Test St&#x27;</span>,
+        <span class="hljs-attr">coordinates</span>: [<span class="hljs-number">77.2090</span>, <span class="hljs-number">28.6139</span>]
+      },
+      <span class="hljs-attr">schedule</span>: {
+        <span class="hljs-attr">preferredDate</span>: <span class="hljs-keyword">new</span> <span class="hljs-title class_">Date</span>(),
+        <span class="hljs-attr">preferredTime</span>: <span class="hljs-string">&#x27;10:00&#x27;</span>
+      }
+    };
+
+    <span class="hljs-keyword">const</span> response = <span class="hljs-keyword">await</span> <span class="hljs-title function_">request</span>(app)
+      .<span class="hljs-title function_">post</span>(<span class="hljs-string">&#x27;/api/bookings&#x27;</span>)
+      .<span class="hljs-title function_">set</span>(<span class="hljs-string">&#x27;Authorization&#x27;</span>, <span class="hljs-string">`Bearer <span class="hljs-subst">${authToken}</span>`</span>)
+      .<span class="hljs-title function_">send</span>(bookingData)
+      .<span class="hljs-title function_">expect</span>(<span class="hljs-number">201</span>);
+
+    <span class="hljs-title function_">expect</span>(response.<span class="hljs-property">body</span>.<span class="hljs-property">data</span>).<span class="hljs-title function_">toHaveProperty</span>(<span class="hljs-string">&#x27;_id&#x27;</span>);
+    <span class="hljs-title function_">expect</span>(response.<span class="hljs-property">body</span>.<span class="hljs-property">data</span>.<span class="hljs-property">status</span>).<span class="hljs-title function_">toBe</span>(<span class="hljs-string">&#x27;pending&#x27;</span>);
+  });
+});</code></pre>
+                </div>
+            <h2>13. Security Considerations</h2>
+<h3>13.1 Data Protection</h3>
+
+                <div class="code-block">
+                    <div class="code-header">
+                        <span class="language">typescript</span>
+                        <button class="copy-button" onclick="copyToClipboard(this)" title="Copy to clipboard">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <pre><code class="hljs language-typescript"><span class="hljs-comment">// Data encryption for sensitive fields</span>
+<span class="hljs-keyword">import</span> crypto <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;crypto&#x27;</span>;
+
+<span class="hljs-keyword">class</span> <span class="hljs-title class_">EncryptionService</span> {
+  <span class="hljs-keyword">private</span> algorithm = <span class="hljs-string">&#x27;aes-256-gcm&#x27;</span>;
+  <span class="hljs-keyword">private</span> key = crypto.<span class="hljs-title function_">scryptSync</span>(process.<span class="hljs-property">env</span>.<span class="hljs-property">ENCRYPTION_KEY</span>!, <span class="hljs-string">&#x27;salt&#x27;</span>, <span class="hljs-number">32</span>);
+
+  <span class="hljs-title function_">encrypt</span>(<span class="hljs-attr">text</span>: <span class="hljs-built_in">string</span>): <span class="hljs-built_in">string</span> {
+    <span class="hljs-keyword">const</span> iv = crypto.<span class="hljs-title function_">randomBytes</span>(<span class="hljs-number">16</span>);
+    <span class="hljs-keyword">const</span> cipher = crypto.<span class="hljs-title function_">createCipher</span>(<span class="hljs-variable language_">this</span>.<span class="hljs-property">algorithm</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">key</span>);
+    cipher.<span class="hljs-title function_">setAAD</span>(<span class="hljs-title class_">Buffer</span>.<span class="hljs-title function_">from</span>(<span class="hljs-string">&#x27;localkart&#x27;</span>));
+    
+    <span class="hljs-keyword">let</span> encrypted = cipher.<span class="hljs-title function_">update</span>(text, <span class="hljs-string">&#x27;utf8&#x27;</span>, <span class="hljs-string">&#x27;hex&#x27;</span>);
+    encrypted += cipher.<span class="hljs-title function_">final</span>(<span class="hljs-string">&#x27;hex&#x27;</span>);
+    
+    <span class="hljs-keyword">const</span> authTag = cipher.<span class="hljs-title function_">getAuthTag</span>();
+    
+    <span class="hljs-keyword">return</span> iv.<span class="hljs-title function_">toString</span>(<span class="hljs-string">&#x27;hex&#x27;</span>) + <span class="hljs-string">&#x27;:&#x27;</span> + authTag.<span class="hljs-title function_">toString</span>(<span class="hljs-string">&#x27;hex&#x27;</span>) + <span class="hljs-string">&#x27;:&#x27;</span> + encrypted;
+  }
+
+  <span class="hljs-title function_">decrypt</span>(<span class="hljs-attr">encryptedText</span>: <span class="hljs-built_in">string</span>): <span class="hljs-built_in">string</span> {
+    <span class="hljs-keyword">const</span> [ivHex, authTagHex, encrypted] = encryptedText.<span class="hljs-title function_">split</span>(<span class="hljs-string">&#x27;:&#x27;</span>);
+    
+    <span class="hljs-keyword">const</span> iv = <span class="hljs-title class_">Buffer</span>.<span class="hljs-title function_">from</span>(ivHex, <span class="hljs-string">&#x27;hex&#x27;</span>);
+    <span class="hljs-keyword">const</span> authTag = <span class="hljs-title class_">Buffer</span>.<span class="hljs-title function_">from</span>(authTagHex, <span class="hljs-string">&#x27;hex&#x27;</span>);
+    
+    <span class="hljs-keyword">const</span> decipher = crypto.<span class="hljs-title function_">createDecipher</span>(<span class="hljs-variable language_">this</span>.<span class="hljs-property">algorithm</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">key</span>);
+    decipher.<span class="hljs-title function_">setAAD</span>(<span class="hljs-title class_">Buffer</span>.<span class="hljs-title function_">from</span>(<span class="hljs-string">&#x27;localkart&#x27;</span>));
+    decipher.<span class="hljs-title function_">setAuthTag</span>(authTag);
+    
+    <span class="hljs-keyword">let</span> decrypted = decipher.<span class="hljs-title function_">update</span>(encrypted, <span class="hljs-string">&#x27;hex&#x27;</span>, <span class="hljs-string">&#x27;utf8&#x27;</span>);
+    decrypted += decipher.<span class="hljs-title function_">final</span>(<span class="hljs-string">&#x27;utf8&#x27;</span>);
+    
+    <span class="hljs-keyword">return</span> decrypted;
+  }
+}</code></pre>
+                </div>
+            <h3>13.2 API Security</h3>
+
+                <div class="code-block">
+                    <div class="code-header">
+                        <span class="language">typescript</span>
+                        <button class="copy-button" onclick="copyToClipboard(this)" title="Copy to clipboard">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <pre><code class="hljs language-typescript"><span class="hljs-comment">// Security headers middleware</span>
+<span class="hljs-keyword">import</span> helmet <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;helmet&#x27;</span>;
+
+app.<span class="hljs-title function_">use</span>(<span class="hljs-title function_">helmet</span>({
+  <span class="hljs-attr">contentSecurityPolicy</span>: {
+    <span class="hljs-attr">directives</span>: {
+      <span class="hljs-attr">defaultSrc</span>: [<span class="hljs-string">&quot;&#x27;self&#x27;&quot;</span>],
+      <span class="hljs-attr">styleSrc</span>: [<span class="hljs-string">&quot;&#x27;self&#x27;&quot;</span>, <span class="hljs-string">&quot;&#x27;unsafe-inline&#x27;&quot;</span>],
+      <span class="hljs-attr">scriptSrc</span>: [<span class="hljs-string">&quot;&#x27;self&#x27;&quot;</span>],
+      <span class="hljs-attr">imgSrc</span>: [<span class="hljs-string">&quot;&#x27;self&#x27;&quot;</span>, <span class="hljs-string">&quot;data:&quot;</span>, <span class="hljs-string">&quot;https:&quot;</span>],
+    },
+  },
+  <span class="hljs-attr">hsts</span>: {
+    <span class="hljs-attr">maxAge</span>: <span class="hljs-number">31536000</span>,
+    <span class="hljs-attr">includeSubDomains</span>: <span class="hljs-literal">true</span>,
+    <span class="hljs-attr">preload</span>: <span class="hljs-literal">true</span>
+  }
+}));
+
+<span class="hljs-comment">// CORS configuration</span>
+app.<span class="hljs-title function_">use</span>(<span class="hljs-title function_">cors</span>({
+  <span class="hljs-attr">origin</span>: process.<span class="hljs-property">env</span>.<span class="hljs-property">ALLOWED_ORIGINS</span>?.<span class="hljs-title function_">split</span>(<span class="hljs-string">&#x27;,&#x27;</span>) || [<span class="hljs-string">&#x27;http://localhost:3000&#x27;</span>],
+  <span class="hljs-attr">credentials</span>: <span class="hljs-literal">true</span>,
+  <span class="hljs-attr">methods</span>: [<span class="hljs-string">&#x27;GET&#x27;</span>, <span class="hljs-string">&#x27;POST&#x27;</span>, <span class="hljs-string">&#x27;PUT&#x27;</span>, <span class="hljs-string">&#x27;DELETE&#x27;</span>, <span class="hljs-string">&#x27;OPTIONS&#x27;</span>],
+  <span class="hljs-attr">allowedHeaders</span>: [<span class="hljs-string">&#x27;Content-Type&#x27;</span>, <span class="hljs-string">&#x27;Authorization&#x27;</span>]
+}));</code></pre>
+                </div>
+            <h2>14. Conclusion</h2>
+<p>This Engineering Review Document provides a comprehensive technical blueprint for building the LocalKart platform. The architecture is designed to be scalable, maintainable, and secure, with proper separation of concerns and modern development practices.</p>
+<p>Key technical highlights:</p>
+<ul>
+<li><strong>Microservices architecture</strong> for scalability</li>
+<li><strong>TypeScript</strong> throughout for type safety</li>
+<li><strong>MongoDB</strong> with proper indexing for performance</li>
+<li><strong>AI integration</strong> with OpenAI for profile generation</li>
+<li><strong>Real-time communication</strong> with Socket.io</li>
+<li><strong>Comprehensive security</strong> measures</li>
+<li><strong>Docker containerization</strong> for deployment</li>
+<li><strong>Kubernetes orchestration</strong> for scaling</li>
+<li><strong>Comprehensive testing</strong> strategy</li>
+</ul>
+<p>The implementation should follow this document closely while adapting to specific requirements and constraints as they arise during development.</p>
+<hr>
+<p><strong>Document Status</strong>: Draft<br><strong>Next Review</strong>: [Date]<br><strong>Technical Lead</strong>: [Name]<br><strong>Version Control</strong>: 1.0</p>
+
+</body>
+</html>

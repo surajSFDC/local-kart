@@ -2,7 +2,7 @@ import mongoose, { Schema, Document } from 'mongoose';
 import bcrypt from 'bcryptjs';
 import { User as IUser, UserRole, GeoLocation } from '@localkart/shared-types';
 
-export interface IUserDocument extends IUser, Document {
+export interface IUserDocument extends Omit<IUser, '_id'>, Document {
   comparePassword(candidatePassword: string): Promise<boolean>;
 }
 
@@ -62,8 +62,8 @@ const UserSchema = new Schema<IUserDocument>({
   timestamps: true,
   toJSON: {
     transform: function(doc, ret) {
-      delete ret.password;
-      return ret;
+      const { password, ...userWithoutPassword } = ret;
+      return userWithoutPassword;
     }
   }
 });

@@ -1,7 +1,7 @@
 import mongoose, { Schema, Document } from 'mongoose';
 import { Booking as IBooking, BookingStatus, BookingService, BookingLocation, BookingSchedule, BookingPricing, BookingPayment, BookingReview } from '@localkart/shared-types';
 
-export interface IBookingDocument extends IBooking, Document {}
+export interface IBookingDocument extends Omit<IBooking, '_id'>, Document {}
 
 const BookingServiceSchema = new Schema<BookingService>({
   category: { type: String, required: true },
@@ -70,12 +70,12 @@ const BookingReviewSchema = new Schema<BookingReview>({
 
 const BookingSchema = new Schema<IBookingDocument>({
   customerId: { 
-    type: Schema.Types.ObjectId, 
+    type: Schema.Types.ObjectId as any, 
     ref: 'User', 
     required: true 
   },
   providerId: { 
-    type: Schema.Types.ObjectId, 
+    type: Schema.Types.ObjectId as any, 
     ref: 'Provider', 
     required: true 
   },
